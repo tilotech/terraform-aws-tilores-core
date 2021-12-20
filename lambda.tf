@@ -1,6 +1,8 @@
 locals {
-  tilores_core_artifact_key = format("tilotech/tilores-core/%s/tilores-core.zip", var.core_version)
-  scavenger_artifact_key    = format("tilotech/func-scavenger/%s/func-scavenger.zip", var.scavenger_version)
+  assemble_artifact_key              = format("tilotech/tilores-core/%s/assemble.zip", var.core_version)
+  disassemble_artifact_key           = format("tilotech/tilores-core/%s/disassemble.zip", var.core_version)
+  remove_connection_ban_artifact_key = format("tilotech/tilores-core/%s/remove-connection-ban.zip", var.core_version)
+  scavenger_artifact_key             = format("tilotech/func-scavenger/%s/scavenger.zip", var.scavenger_version)
 }
 
 module "lambda_assemble" {
@@ -15,7 +17,7 @@ module "lambda_assemble" {
 
   s3_existing_package = {
     bucket = local.artifacts_bucket
-    key    = local.tilores_core_artifact_key
+    key    = local.assemble_artifact_key
   }
 
   environment_variables = local.core_envs
@@ -52,7 +54,7 @@ module "lambda_disassemble" {
 
   s3_existing_package = {
     bucket = local.artifacts_bucket
-    key    = local.tilores_core_artifact_key
+    key    = local.disassemble_artifact_key
   }
 
   environment_variables = local.core_envs
@@ -78,7 +80,7 @@ module "lambda_remove_connection_ban" {
 
   s3_existing_package = {
     bucket = local.artifacts_bucket
-    key    = local.tilores_core_artifact_key
+    key    = local.remove_connection_ban_artifact_key
   }
 
   environment_variables = local.core_envs
