@@ -1,0 +1,58 @@
+{
+  "start": "-P5Y",
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 6,
+      "height": 3,
+      "properties": {
+        "metrics": [
+          [
+            "${NAMESPACE}",
+            "EntityReport"
+          ]
+        ],
+        "view": "singleValue",
+        "region": "eu-west-1",
+        "stat": "Sum",
+        "setPeriodToTimeRange": true,
+        "title": "Number of entities in pool"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 3,
+      "width": 24,
+      "height": 9,
+      "properties": {
+        "title": "Added entities per minute",
+        "metrics": [
+          [
+            "${NAMESPACE}",
+            "EntityReport"
+          ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "eu-west-1",
+        "stat": "Sum",
+        "period": 60,
+        "liveData": true,
+        "legend": {
+          "position": "hidden"
+        },
+        "yAxis": {
+          "left": {
+            "showUnits": false
+          },
+          "right": {
+            "showUnits": false
+          }
+        }
+      }
+    }
+  ]
+}
