@@ -1,5 +1,5 @@
 locals {
-  dispatcher_plugin_artifact_key = format("tilotech/tilores-plugin-dispatcher/%s/dispatcher.zip", var.dispatcher_plugin_version)
+  dispatcher_plugin_artifact_key = format("tilotech/tilores-plugin-dispatcher/%s/tilores-plugin-dispatcher.zip", var.dispatcher_plugin_version)
 }
 
 module "api_gateway" {
