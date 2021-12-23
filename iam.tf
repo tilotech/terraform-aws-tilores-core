@@ -38,27 +38,10 @@ data "aws_iam_policy_document" "lambda_core" {
     resources = [
       aws_dynamodb_table.lookup.arn,
       aws_dynamodb_table.rule_index.arn,
-      aws_dynamodb_table.rule_index_all.arn,
       aws_dynamodb_table.rule_reverse_index.arn,
       aws_kinesis_stream.kinesis_rawdata_stream.arn,
       aws_kinesis_stream.kinesis_entity_stream.arn,
       aws_sqs_queue.dead_letter_queue.arn,
-    ]
-  }
-  statement {
-    effect = "Allow"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:BatchGetItem",
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:Query",
-      "dynamodb:BatchWriteItem"
-    ]
-    resources = [
-      aws_dynamodb_table.rule_index_entity.arn,
-      join("/index/", [aws_dynamodb_table.rule_index_entity.arn, aws_dynamodb_table.rule_index_entity.global_secondary_index.*.name[0]])
     ]
   }
   statement {

@@ -29,10 +29,9 @@ module "lambda_assemble" {
   attach_policies = true
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
     aws_iam_policy.lambda_core.arn
   ]
-  number_of_policies = 3
+  number_of_policies = 2
 
   event_source_mapping = {
     kinesis = {
@@ -70,10 +69,9 @@ module "lambda_disassemble" {
   attach_policies = true
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
     aws_iam_policy.lambda_core.arn
   ]
-  number_of_policies = 3
+  number_of_policies = 2
 }
 
 module "lambda_remove_connection_ban" {
@@ -100,10 +98,9 @@ module "lambda_remove_connection_ban" {
   attach_policies = true
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
     aws_iam_policy.lambda_core.arn
   ]
-  number_of_policies = 3
+  number_of_policies = 2
 }
 
 module "lambda_scavenger" {
@@ -142,12 +139,8 @@ module "lambda_scavenger" {
 
   create_current_version_allowed_triggers = false
 
-  attach_policies = true
-  policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-    "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
-  ]
-  number_of_policies = 2
+  attach_policy = true
+  policy        = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
   attach_policy_statements = true
   policy_statements = {

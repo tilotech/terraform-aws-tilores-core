@@ -4,19 +4,13 @@ variable "resource_prefix" {
 }
 
 variable "authorizer_issuer_url" {
-  type = string
+  type        = string
   description = "The issuer URL to be used by the authorizer (for cognito it is the user pool endpoint)"
 }
 
 variable "authorizer_audience" {
-  type = list(string)
+  type        = list(string)
   description = "A list of allowed token recipient identifiers  (for cognito it is the client ID)"
-}
-
-variable "enable_kms" {
-  description = "Enabled KMS encryption (currently only SQS, for other resources its enabled by default)"
-  type        = bool
-  default     = "false"
 }
 
 variable "entity_event_stream_shard_count" {
@@ -72,15 +66,15 @@ locals {
   rule_config_json_path = format("/opt/%s", replace(basename(var.rule_config_file), ".zip", ".json"))
 
   core_envs = {
-    RULE_CONFIG                           = local.rule_config_json_path
-    DYNAMODB_RULE_INDEX                   = aws_dynamodb_table.rule_index.name
-    DYNAMODB_RULE_REVERSE_INDEX           = aws_dynamodb_table.rule_reverse_index.name
-    DYNAMODB_LOOKUP                       = aws_dynamodb_table.lookup.name
-    DYNAMODB_CONSISTENT_READ              = "TRUE"
-    S3_ENTITY_BUCKET                      = aws_s3_bucket.entity.bucket
-    S3_EXECUTION_PLAN_BUCKET              = aws_s3_bucket.execution_plan.bucket
-    KINESIS_ENTITY_STREAM                 = aws_kinesis_stream.kinesis_entity_stream.name
-    KINESIS_RAW_DATA_STREAM               = aws_kinesis_stream.kinesis_rawdata_stream.name
-    DEAD_LETTER_QUEUE                     = aws_sqs_queue.dead_letter_queue.name
+    RULE_CONFIG                 = local.rule_config_json_path
+    DYNAMODB_RULE_INDEX         = aws_dynamodb_table.rule_index.name
+    DYNAMODB_RULE_REVERSE_INDEX = aws_dynamodb_table.rule_reverse_index.name
+    DYNAMODB_LOOKUP             = aws_dynamodb_table.lookup.name
+    DYNAMODB_CONSISTENT_READ    = "TRUE"
+    S3_ENTITY_BUCKET            = aws_s3_bucket.entity.bucket
+    S3_EXECUTION_PLAN_BUCKET    = aws_s3_bucket.execution_plan.bucket
+    KINESIS_ENTITY_STREAM       = aws_kinesis_stream.kinesis_entity_stream.name
+    KINESIS_RAW_DATA_STREAM     = aws_kinesis_stream.kinesis_rawdata_stream.name
+    DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
   }
 }
