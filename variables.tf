@@ -14,20 +14,20 @@ variable "authorizer_audience" {
 }
 
 variable "entity_event_stream_shard_count" {
-  description = "The amount of Kinesis shards used for entity event stream, can only be incremented by doubling the current value as many times as needed"
+  description = "The amount of Kinesis shards used for entity event stream; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
   type        = string
   default     = "1"
 }
 
 variable "rawdata_stream_shard_count" {
-  description = "The amount of Kinesis shards used for the rawdata assembly stream, in case you expect a high amount of data ingestion (mutation submit) then increase this number, can only be incremented by doubling the current value as many times as needed"
+  description = "The amount of Kinesis shards used for the rawdata assembly stream, in case you expect a high amount of data ingestion (mutation submit) then increase this number; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
   type        = string
   default     = "1"
 }
 
 variable "assemble_parallelization_factor" {
   type        = string
-  description = "This value configures how many lambda consumers are on each raw stream shard. (Max and default is 10)"
+  description = "This value configures how many lambda consumers are listening on each raw stream shard. (Max and default is 10)"
   default     = "10"
 }
 
