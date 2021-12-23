@@ -15,7 +15,21 @@ module "api_gateway" {
     "POST /" = {
       lambda_arn             = module.lambda_api.lambda_function_arn
       payload_format_version = "1.0"
+      authorization_type     = "JWT"
+      authorizer_id          = aws_apigatewayv2_authorizer.api_authorizer.id
     }
+  }
+}
+
+resource "aws_apigatewayv2_authorizer" "api_authorizer" {
+  api_id           = module.api_gateway.apigatewayv2_api_id
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+  name             = format("%s-authorizer", local.prefix)
+
+  jwt_configuration {
+    audience = var.authorizer_audience
+    issuer   = var.authorizer_issuer_url
   }
 }
 
@@ -33,6 +47,7 @@ module "lambda_api" {
 
   layers = [
     module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
+    module.lambda_layer_rule_config.lambda_layer_arn,
   ]
 
   allowed_triggers = {
@@ -43,9 +58,9 @@ module "lambda_api" {
   }
   create_current_version_allowed_triggers = false
 
-  environment_variables = merge(local.core_envs, { // TODO: Adjust according to new dispatcher
-    IR_LAMBDA_DISASSEMBLE_ARN           = module.lambda_disassemble.lambda_function_arn
-    IR_LAMBDA_REMOVE_CONNECTION_BAN_ARN = module.lambda_remove_connection_ban.lambda_function_arn
+  environment_variables = merge(local.core_envs, {
+    CORE_LAMBDA_DISASSEMBLE_ARN           = module.lambda_disassemble.lambda_function_arn
+    CORE_LAMBDA_REMOVE_CONNECTION_BAN_ARN = module.lambda_remove_connection_ban.lambda_function_arn
   })
 
   attach_policy = true
@@ -78,4 +93,17 @@ module "lambda_layer_dispatcher_plugin" {
     bucket = local.artifacts_bucket
     key    = local.dispatcher_plugin_artifact_key
   }
+}
+
+module "lambda_layer_rule_config" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  create_layer = true
+
+  layer_name          = format("%s-rule-config", local.prefix)
+  description         = "Rule config json file"
+  compatible_runtimes = ["go1.x"]
+
+  create_package         = false
+  local_existing_package = var.rule_config_file
 }

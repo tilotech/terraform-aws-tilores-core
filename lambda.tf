@@ -1,7 +1,7 @@
 locals {
   assemble_artifact_key              = format("tilotech/tilores-core/%s/assemble.zip", var.core_version)
   disassemble_artifact_key           = format("tilotech/tilores-core/%s/disassemble.zip", var.core_version)
-  remove_connection_ban_artifact_key = format("tilotech/tilores-core/%s/remove-connection-ban.zip", var.core_version)
+  remove_connection_ban_artifact_key = format("tilotech/tilores-core/%s/removeconnectionban.zip", var.core_version)
   scavenger_artifact_key             = format("tilotech/func-scavenger/%s/scavenger.zip", var.scavenger_version)
 }
 
@@ -19,6 +19,10 @@ module "lambda_assemble" {
     bucket = local.artifacts_bucket
     key    = local.assemble_artifact_key
   }
+
+  layers = [
+    module.lambda_layer_rule_config.lambda_layer_arn,
+  ]
 
   environment_variables = local.core_envs
 
@@ -57,6 +61,10 @@ module "lambda_disassemble" {
     key    = local.disassemble_artifact_key
   }
 
+  layers = [
+    module.lambda_layer_rule_config.lambda_layer_arn,
+  ]
+
   environment_variables = local.core_envs
 
   attach_policies = true
@@ -82,6 +90,10 @@ module "lambda_remove_connection_ban" {
     bucket = local.artifacts_bucket
     key    = local.remove_connection_ban_artifact_key
   }
+
+  layers = [
+    module.lambda_layer_rule_config.lambda_layer_arn,
+  ]
 
   environment_variables = local.core_envs
 
@@ -115,15 +127,15 @@ module "lambda_scavenger" {
 
   allowed_triggers = {
     assemble = {
-      principal  = format("logs.%s.amazonaws.com", data.aws_region.current)
+      principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
       source_arn = format("%s:*", module.lambda_assemble.lambda_cloudwatch_log_group_arn)
     }
     disassemble = {
-      principal  = format("logs.%s.amazonaws.com", data.aws_region.current)
+      principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
       source_arn = format("%s:*", module.lambda_disassemble.lambda_cloudwatch_log_group_arn)
     }
     remove_connection_ban = {
-      principal  = format("logs.%s.amazonaws.com", data.aws_region.current)
+      principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
       source_arn = format("%s:*", module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_arn)
     }
   }

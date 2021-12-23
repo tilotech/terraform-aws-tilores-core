@@ -3,6 +3,16 @@ variable "resource_prefix" {
   description = "The text every created resource will be prefixed with."
 }
 
+variable "authorizer_issuer_url" {
+  type = string
+  description = "The issuer URL to be used by the authorizer (for cognito it is the user pool endpoint)"
+}
+
+variable "authorizer_audience" {
+  type = list(string)
+  description = "A list of allowed token recipient identifiers  (for cognito it is the client ID)"
+}
+
 variable "enable_kms" {
   description = "Enabled KMS encryption (currently only SQS, for other resources its enabled by default)"
   type        = bool
@@ -27,13 +37,14 @@ variable "assemble_parallelization_factor" {
   default     = "10"
 }
 
-variable "rule_config" { // TODO: Verify if still needed
-  type = string
-}
-
 variable "api_file" {
   type        = string
   description = "The path to the built and zipped API artifact. (automatically created using tilores-cli)"
+}
+
+variable "rule_config_file" {
+  description = "The path to the zipped rule config json file. (automatically created using tilores-cli)"
+  type        = string
 }
 
 variable "core_version" {
@@ -58,18 +69,11 @@ locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = "tilotech-artifacts"
 
-  core_envs = { // TODO: Adjust according to refactored version
-    RULE_CONFIG                           = var.rule_config
-    RULE_SET_ID_INDEX                     = "index"
-    RULE_SET_ID_INDEX_ALL                 = "indexAll"
-    RULE_SET_ID_INDEX_ENTITY              = "indexEntity"
-    RULE_SET_ID_SEARCH                    = "match"
-    RULE_SET_ID_DEDUP                     = "dedup"
-    RULE_SET_ID_ASSOC                     = "associated"
+  rule_config_json_path = format("/opt/%s", replace(basename(var.rule_config_file), ".zip", ".json"))
+
+  core_envs = {
+    RULE_CONFIG                           = local.rule_config_json_path
     DYNAMODB_RULE_INDEX                   = aws_dynamodb_table.rule_index.name
-    DYNAMODB_RULE_INDEX_ALL               = aws_dynamodb_table.rule_index_all.name
-    DYNAMODB_RULE_INDEX_ENTITY            = aws_dynamodb_table.rule_index_entity.name
-    DYNAMODB_RULE_INDEX_ENTITY_INDEX_NAME = aws_dynamodb_table.rule_index_entity.global_secondary_index.*.name[0]
     DYNAMODB_RULE_REVERSE_INDEX           = aws_dynamodb_table.rule_reverse_index.name
     DYNAMODB_LOOKUP                       = aws_dynamodb_table.lookup.name
     DYNAMODB_CONSISTENT_READ              = "TRUE"
