@@ -1,7 +1,3 @@
-locals {
-  dispatcher_plugin_artifact_key = format("tilotech/tilores-plugin-dispatcher/%s/tilores-plugin-dispatcher.zip", var.dispatcher_plugin_version)
-}
-
 module "api_gateway" {
   source = "terraform-aws-modules/apigateway-v2/aws"
 
@@ -90,8 +86,9 @@ module "lambda_layer_dispatcher_plugin" {
 
   create_package = false
   s3_existing_package = {
-    bucket = local.artifacts_bucket
-    key    = local.dispatcher_plugin_artifact_key
+    bucket     = data.aws_s3_bucket_object.dispatcher_plugin_artifact.bucket
+    key        = data.aws_s3_bucket_object.dispatcher_plugin_artifact.key
+    version_id = data.aws_s3_bucket_object.dispatcher_plugin_artifact.version_id
   }
 }
 
