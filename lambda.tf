@@ -1,10 +1,3 @@
-locals {
-  assemble_artifact_key              = format("tilotech/tilores-core/%s/assemble.zip", var.core_version)
-  disassemble_artifact_key           = format("tilotech/tilores-core/%s/disassemble.zip", var.core_version)
-  remove_connection_ban_artifact_key = format("tilotech/tilores-core/%s/removeconnectionban.zip", var.core_version)
-  scavenger_artifact_key             = format("tilotech/func-scavenger/%s/scavenger.zip", var.scavenger_version)
-}
-
 module "lambda_assemble" {
   source = "terraform-aws-modules/lambda/aws"
 
@@ -16,8 +9,9 @@ module "lambda_assemble" {
   create_package = false
 
   s3_existing_package = {
-    bucket = local.artifacts_bucket
-    key    = local.assemble_artifact_key
+    bucket     = data.aws_s3_bucket_object.assemble_artifact.bucket
+    key        = data.aws_s3_bucket_object.assemble_artifact.key
+    version_id = data.aws_s3_bucket_object.assemble_artifact.version_id
   }
 
   layers = [
@@ -56,8 +50,9 @@ module "lambda_disassemble" {
   create_package = false
 
   s3_existing_package = {
-    bucket = local.artifacts_bucket
-    key    = local.disassemble_artifact_key
+    bucket     = data.aws_s3_bucket_object.disassemble_artifact.bucket
+    key        = data.aws_s3_bucket_object.disassemble_artifact.key
+    version_id = data.aws_s3_bucket_object.disassemble_artifact.version_id
   }
 
   layers = [
@@ -85,8 +80,9 @@ module "lambda_remove_connection_ban" {
   create_package = false
 
   s3_existing_package = {
-    bucket = local.artifacts_bucket
-    key    = local.remove_connection_ban_artifact_key
+    bucket     = data.aws_s3_bucket_object.remove_connection_ban_artifact.bucket
+    key        = data.aws_s3_bucket_object.remove_connection_ban_artifact.key
+    version_id = data.aws_s3_bucket_object.remove_connection_ban_artifact.version_id
   }
 
   layers = [
@@ -114,8 +110,9 @@ module "lambda_scavenger" {
   create_package = false
 
   s3_existing_package = {
-    bucket = local.artifacts_bucket
-    key    = local.scavenger_artifact_key
+    bucket     = data.aws_s3_bucket_object.scavenger_artifact.bucket
+    key        = data.aws_s3_bucket_object.scavenger_artifact.key
+    version_id = data.aws_s3_bucket_object.scavenger_artifact.version_id
   }
 
   environment_variables = {
