@@ -53,12 +53,6 @@ variable "scavenger_version" {
   default     = "v0"
 }
 
-variable "dispatcher_plugin_version" {
-  description = "The version of dispatcher plugin, e.g. v0-1-0 , v0 or latest"
-  type        = string
-  default     = "v0"
-}
-
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = "tilotech-artifacts"
