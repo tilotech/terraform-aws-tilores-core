@@ -1,5 +1,5 @@
 locals {
-  dispatcher_plugin_artifact_key     = format("tilotech/tilores-plugin-dispatcher/%s/tilores-plugin-dispatcher.zip", var.dispatcher_plugin_version)
+  dispatcher_plugin_artifact_key     = format("tilotech/tilores-core/%s/dispatcher.zip", var.core_version)
   assemble_artifact_key              = format("tilotech/tilores-core/%s/assemble.zip", var.core_version)
   disassemble_artifact_key           = format("tilotech/tilores-core/%s/disassemble.zip", var.core_version)
   remove_connection_ban_artifact_key = format("tilotech/tilores-core/%s/removeconnectionban.zip", var.core_version)
