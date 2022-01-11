@@ -36,7 +36,8 @@ data "aws_iam_policy_document" "lambda_core" {
       "sqs:GetQueueUrl"
     ]
     resources = [
-      aws_dynamodb_table.lookup.arn,
+      aws_dynamodb_table.entites.arn,
+      aws_dynamodb_table.records.arn,
       aws_dynamodb_table.rule_index.arn,
       aws_dynamodb_table.rule_reverse_index.arn,
       aws_kinesis_stream.kinesis_rawdata_stream.arn,
