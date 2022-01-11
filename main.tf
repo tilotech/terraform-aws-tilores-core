@@ -41,10 +41,6 @@ module "lambda_api" {
   create_package         = false
   local_existing_package = var.api_file
 
-  environment_variables = {
-    DISPATCHER_PLUGIN_PATH = "/opt/dispatcher"
-  }
-
   layers = [
     module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
     module.lambda_layer_rule_config.lambda_layer_arn,
@@ -59,6 +55,7 @@ module "lambda_api" {
   create_current_version_allowed_triggers = false
 
   environment_variables = merge(local.core_envs, {
+    DISPATCHER_PLUGIN_PATH                = "/opt/dispatcher"
     CORE_LAMBDA_DISASSEMBLE_ARN           = module.lambda_disassemble.lambda_function_arn
     CORE_LAMBDA_REMOVE_CONNECTION_BAN_ARN = module.lambda_remove_connection_ban.lambda_function_arn
   })
