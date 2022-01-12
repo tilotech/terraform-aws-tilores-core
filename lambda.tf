@@ -3,8 +3,10 @@ module "lambda_assemble" {
 
   function_name = format("%s-assemble", local.prefix)
   handler       = "assemble"
-  runtime       = "go1.x"
+  runtime       = "provided.al2"
   timeout       = 900
+  memory_size   = 1024
+  architectures = ["arm64"]
 
   create_package = false
 
@@ -42,8 +44,10 @@ module "lambda_disassemble" {
 
   function_name = format("%s-disassemble", local.prefix)
   handler       = "disassemble"
-  runtime       = "go1.x"
+  runtime       = "provided.al2"
   timeout       = 900
+  memory_size   = 1024
+  architectures = ["arm64"]
 
   dead_letter_target_arn = aws_sqs_queue.dead_letter_queue.arn
 
@@ -74,8 +78,10 @@ module "lambda_remove_connection_ban" {
 
   function_name = format("%s-remove-connection-ban", local.prefix)
   handler       = "removeconnectionban"
-  runtime       = "go1.x"
+  runtime       = "provided.al2"
   timeout       = 900
+  memory_size   = 1024
+  architectures = ["arm64"]
 
   create_package = false
 
@@ -104,8 +110,10 @@ module "lambda_scavenger" {
 
   function_name = format("%s-scavenger", local.prefix)
   handler       = "scavenger"
-  runtime       = "go1.x"
+  runtime       = "provided.al2"
   timeout       = 900
+  memory_size   = 1024
+  architectures = ["arm64"]
 
   create_package = false
 
