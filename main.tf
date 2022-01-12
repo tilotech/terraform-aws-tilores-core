@@ -35,8 +35,10 @@ module "lambda_api" {
   function_name = format("%s-api", local.prefix)
   description   = "TiloRes API"
   handler       = "api"
-  runtime       = "go1.x"
+  runtime       = "provided.al2"
   timeout       = 30
+  memory_size   = 1024
+  architectures = ["arm64"]
 
   create_package         = false
   local_existing_package = var.api_file
@@ -55,7 +57,7 @@ module "lambda_api" {
   create_current_version_allowed_triggers = false
 
   environment_variables = merge(local.core_envs, {
-    DISPATCHER_PLUGIN_PATH                = "/opt/dispatcher"
+    DISPATCHER_PLUGIN_PATH                = "/opt/plugin-dispatcher"
     CORE_LAMBDA_DISASSEMBLE_ARN           = module.lambda_disassemble.lambda_function_arn
     CORE_LAMBDA_REMOVE_CONNECTION_BAN_ARN = module.lambda_remove_connection_ban.lambda_function_arn
   })
@@ -81,9 +83,10 @@ module "lambda_layer_dispatcher_plugin" {
 
   create_layer = true
 
-  layer_name          = format("%s-dispatcher-plugin", local.prefix)
-  description         = "TiloRes API Dispatcher Plugin"
-  compatible_runtimes = ["go1.x"]
+  layer_name               = format("%s-dispatcher-plugin", local.prefix)
+  description              = "TiloRes API Dispatcher Plugin"
+  compatible_runtimes      = ["provided.al2"]
+  compatible_architectures = ["arm64"]
 
   create_package = false
   s3_existing_package = {
@@ -98,9 +101,10 @@ module "lambda_layer_rule_config" {
 
   create_layer = true
 
-  layer_name          = format("%s-rule-config", local.prefix)
-  description         = "Rule config json file"
-  compatible_runtimes = ["go1.x"]
+  layer_name               = format("%s-rule-config", local.prefix)
+  description              = "Rule config json file"
+  compatible_runtimes      = ["provided.al2"]
+  compatible_architectures = ["arm64"]
 
   create_package         = false
   local_existing_package = var.rule_config_file
