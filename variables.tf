@@ -55,7 +55,7 @@ variable "scavenger_version" {
 
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
-  artifacts_bucket = "tilotech-artifacts"
+  artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)
 
   rule_config_json_path = format("/opt/%s", replace(basename(var.rule_config_file), ".zip", ".json"))
 
