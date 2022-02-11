@@ -53,9 +53,16 @@ variable "scavenger_version" {
   default     = "v0"
 }
 
+variable "customer_metrics_version" {
+  description = "The version of customer metrics, e.g. v0-1-0 , v0 or latest"
+  type        = string
+  default     = "v0"
+}
+
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)
+  tilotech_api_url = "https://api.tilotech.io"
 
   rule_config_json_path = format("/opt/%s", replace(basename(var.rule_config_file), ".zip", ".json"))
 
