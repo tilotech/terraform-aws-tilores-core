@@ -187,3 +187,47 @@ resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scaveng
   log_group_name  = module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_name
   name            = format("%s-%s", local.prefix, "remove-connection-ban-scavenger")
 }
+
+module "lambda_send_usage_data" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = format("%s-send-usage-data", local.prefix)
+  handler       = "send"
+  runtime       = "provided.al2"
+  timeout       = 900
+  memory_size   = 1024
+  architectures = ["arm64"]
+
+  create_package = false
+
+  s3_existing_package = {
+    bucket     = data.aws_s3_bucket_object.customer_metrics_artifact.bucket
+    key        = data.aws_s3_bucket_object.customer_metrics_artifact.key
+    version_id = data.aws_s3_bucket_object.customer_metrics_artifact.version_id
+  }
+
+  environment_variables = {
+    TABLE_ENTITIES       = aws_dynamodb_table.entites.id
+    TABLE_RECORDS        = aws_dynamodb_table.records.id
+    STREAM_RAW_DATA      = aws_kinesis_stream.kinesis_rawdata_stream.name
+    FUNCTION_API         = module.lambda_api.lambda_function_name
+    FUNCTION_ASSEMBLE    = module.lambda_assemble.lambda_function_name
+    FUNCTION_DISASSEMBLE = module.lambda_disassemble.lambda_function_name
+    TILOTECH_API_URL     = local.tilotech_api_url
+  }
+
+  allowed_triggers = {
+    CloudWatchRule = {
+      principal  = "events.amazonaws.com"
+      source_arn = aws_cloudwatch_event_rule.send_usage_data.arn
+    }
+  }
+  create_current_version_allowed_triggers = false
+
+  attach_policies = true
+  policies = [
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+    aws_iam_policy.lambda_send_usage_data.arn
+  ]
+  number_of_policies = 2
+}

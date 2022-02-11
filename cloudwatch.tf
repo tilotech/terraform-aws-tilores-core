@@ -23,3 +23,13 @@ resource "aws_cloudwatch_log_metric_filter" "metric_filters" {
     value     = local.metric_filters[count.index].value
   }
 }
+
+resource "aws_cloudwatch_event_rule" "send_usage_data" {
+  name = format("%s-send-usage-data", local.prefix)
+  schedule_expression = "cron(5 * * * ? *)" // every hour at minute 5
+}
+
+resource "aws_cloudwatch_event_target" "send_usage_data" {
+  rule = aws_cloudwatch_event_rule.send_usage_data.name
+  arn = module.lambda_send_usage_data.lambda_function_arn
+}

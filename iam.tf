@@ -54,3 +54,28 @@ data "aws_iam_policy_document" "lambda_core" {
     resources = ["*"]
   }
 }
+
+resource "aws_iam_policy" "lambda_send_usage_data" {
+  name   = format("%s-lambda-send-usage-data", local.prefix)
+  policy = data.aws_iam_policy_document.lambda_send_usage_data.json
+}
+
+data "aws_iam_policy_document" "lambda_send_usage_data" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "cloudwatch:GetMetricData"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "dynamodb:DescribeTable"
+    ]
+    resources = [
+      aws_dynamodb_table.entites.arn,
+      aws_dynamodb_table.records.arn
+    ]
+  }
+}
