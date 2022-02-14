@@ -231,3 +231,8 @@ module "lambda_send_usage_data" {
   ]
   number_of_policies = 2
 }
+
+resource "aws_lambda_function_event_invoke_config" "send_usage_data" {
+  function_name          = module.lambda_send_usage_data.lambda_function_name
+  maximum_retry_attempts = 0
+}
