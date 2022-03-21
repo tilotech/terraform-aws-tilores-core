@@ -25,11 +25,19 @@ resource "aws_cloudwatch_log_metric_filter" "metric_filters" {
 }
 
 resource "aws_cloudwatch_event_rule" "send_usage_data" {
-  name = format("%s-send-usage-data", local.prefix)
+  name                = format("%s-send-usage-data", local.prefix)
   schedule_expression = "cron(5 * * * ? *)" // every hour at minute 5
 }
 
 resource "aws_cloudwatch_event_target" "send_usage_data" {
   rule = aws_cloudwatch_event_rule.send_usage_data.name
-  arn = module.lambda_send_usage_data.lambda_function_arn
+  arn  = module.lambda_send_usage_data.lambda_function_arn
+}
+
+resource "aws_cloudwatch_dashboard" "tilores_dashboard" {
+  dashboard_body = templatefile(format("%s/tilores-dashboard.json", path.module), {
+    PREFIX = local.prefix
+    REGION = data.aws_region.current.id
+  })
+  dashboard_name = format("%s-dashboard", local.prefix)
 }

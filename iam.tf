@@ -64,7 +64,8 @@ data "aws_iam_policy_document" "lambda_send_usage_data" {
   statement {
     effect = "Allow"
     actions = [
-      "cloudwatch:GetMetricData"
+      "cloudwatch:GetMetricData",
+      "cloudwatch:PutMetricData"
     ]
     resources = ["*"]
   }

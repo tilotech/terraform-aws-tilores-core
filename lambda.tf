@@ -207,13 +207,14 @@ module "lambda_send_usage_data" {
   }
 
   environment_variables = {
-    TABLE_ENTITIES       = aws_dynamodb_table.entites.id
-    TABLE_RECORDS        = aws_dynamodb_table.records.id
-    STREAM_RAW_DATA      = aws_kinesis_stream.kinesis_rawdata_stream.name
-    FUNCTION_API         = module.lambda_api.lambda_function_name
-    FUNCTION_ASSEMBLE    = module.lambda_assemble.lambda_function_name
-    FUNCTION_DISASSEMBLE = module.lambda_disassemble.lambda_function_name
-    TILOTECH_API_URL     = local.tilotech_api_url
+    TABLE_ENTITIES        = aws_dynamodb_table.entites.id
+    TABLE_RECORDS         = aws_dynamodb_table.records.id
+    STREAM_RAW_DATA       = aws_kinesis_stream.kinesis_rawdata_stream.name
+    FUNCTION_API          = module.lambda_api.lambda_function_name
+    FUNCTION_ASSEMBLE     = module.lambda_assemble.lambda_function_name
+    FUNCTION_DISASSEMBLE  = module.lambda_disassemble.lambda_function_name
+    TILOTECH_API_URL      = local.tilotech_api_url
+    TILORES_INSTANCE_NAME = local.prefix
   }
 
   allowed_triggers = {
