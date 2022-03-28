@@ -1,5 +1,6 @@
 module "lambda_assemble" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "2.36.0"
 
   function_name = format("%s-assemble", local.prefix)
   handler       = "assemble"
@@ -40,7 +41,8 @@ module "lambda_assemble" {
 }
 
 module "lambda_disassemble" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "2.36.0"
 
   function_name = format("%s-disassemble", local.prefix)
   handler       = "disassemble"
@@ -74,7 +76,8 @@ module "lambda_disassemble" {
 }
 
 module "lambda_remove_connection_ban" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "2.36.0"
 
   function_name = format("%s-remove-connection-ban", local.prefix)
   handler       = "removeconnectionban"
@@ -106,7 +109,8 @@ module "lambda_remove_connection_ban" {
 }
 
 module "lambda_scavenger" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "2.36.0"
 
   function_name = format("%s-scavenger", local.prefix)
   handler       = "scavenger"
@@ -189,7 +193,8 @@ resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scaveng
 }
 
 module "lambda_send_usage_data" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "2.36.0"
 
   function_name = format("%s-send-usage-data", local.prefix)
   handler       = "send"
