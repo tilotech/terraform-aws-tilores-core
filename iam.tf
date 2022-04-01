@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "lambda_core" {
       "sqs:GetQueueUrl"
     ]
     resources = [
-      aws_dynamodb_table.entites.arn,
+      aws_dynamodb_table.entities.arn,
       aws_dynamodb_table.records.arn,
       aws_dynamodb_table.rule_index.arn,
       aws_dynamodb_table.rule_reverse_index.arn,
@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "lambda_send_usage_data" {
       "dynamodb:DescribeTable"
     ]
     resources = [
-      aws_dynamodb_table.entites.arn,
+      aws_dynamodb_table.entities.arn,
       aws_dynamodb_table.records.arn
     ]
   }

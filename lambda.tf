@@ -212,7 +212,7 @@ module "lambda_send_usage_data" {
   }
 
   environment_variables = {
-    TABLE_ENTITIES        = aws_dynamodb_table.entites.id
+    TABLE_ENTITIES        = aws_dynamodb_table.entities.id
     TABLE_RECORDS         = aws_dynamodb_table.records.id
     STREAM_RAW_DATA       = aws_kinesis_stream.kinesis_rawdata_stream.name
     FUNCTION_API          = module.lambda_api.lambda_function_name

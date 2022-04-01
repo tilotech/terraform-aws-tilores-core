@@ -70,7 +70,7 @@ locals {
     RULE_CONFIG                 = local.rule_config_json_path
     DYNAMODB_RULE_INDEX         = aws_dynamodb_table.rule_index.name
     DYNAMODB_RULE_REVERSE_INDEX = aws_dynamodb_table.rule_reverse_index.name
-    DYNAMODB_ENTITIES           = aws_dynamodb_table.entites.name
+    DYNAMODB_ENTITIES           = aws_dynamodb_table.entities.name
     DYNAMODB_RECORDS            = aws_dynamodb_table.records.name
     DYNAMODB_CONSISTENT_READ    = "TRUE"
     S3_ENTITY_BUCKET            = aws_s3_bucket.entity.bucket
