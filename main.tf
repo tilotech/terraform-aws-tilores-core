@@ -1,6 +1,6 @@
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
-  version = "1.6.0"
+  version = "~> 1.6"
 
   name          = format("%s-api", local.prefix)
   description   = "TiloRes API Gateway"
@@ -32,7 +32,7 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer" {
 
 module "lambda_api" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "2.36.0"
+  version = "~> 3.1"
 
   function_name = format("%s-api", local.prefix)
   description   = "TiloRes API"
@@ -82,7 +82,7 @@ module "lambda_api" {
 
 module "lambda_layer_dispatcher_plugin" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "2.36.0"
+  version = "~> 3.1"
 
   create_layer = true
 
@@ -93,15 +93,15 @@ module "lambda_layer_dispatcher_plugin" {
 
   create_package = false
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.dispatcher_plugin_artifact.bucket
-    key        = data.aws_s3_bucket_object.dispatcher_plugin_artifact.key
-    version_id = data.aws_s3_bucket_object.dispatcher_plugin_artifact.version_id
+    bucket     = data.aws_s3_object.dispatcher_plugin_artifact.bucket
+    key        = data.aws_s3_object.dispatcher_plugin_artifact.key
+    version_id = data.aws_s3_object.dispatcher_plugin_artifact.version_id
   }
 }
 
 module "lambda_layer_rule_config" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "2.36.0"
+  version = "~> 3.1"
 
   create_layer = true
 
