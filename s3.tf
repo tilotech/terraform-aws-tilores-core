@@ -30,6 +30,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "entity" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "entity" {
+  bucket = aws_s3_bucket.entity.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket" "execution_plan" {
   bucket        = format("%s-%s", local.prefix, "execution-plan")
   force_destroy = true
@@ -60,4 +69,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "execution_plan" {
     }
     bucket_key_enabled = true
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "execution_plan" {
+  bucket = aws_s3_bucket.execution_plan.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
