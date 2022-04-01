@@ -1,5 +1,5 @@
-resource "aws_dynamodb_table" "entites" {
-  name         = format("%s-%s", local.prefix, "entites")
+resource "aws_dynamodb_table" "entities" {
+  name         = format("%s-%s", local.prefix, "entities")
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "id"
 
