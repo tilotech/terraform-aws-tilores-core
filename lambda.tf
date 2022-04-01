@@ -12,9 +12,9 @@ module "lambda_assemble" {
   create_package = false
 
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.assemble_artifact.bucket
-    key        = data.aws_s3_bucket_object.assemble_artifact.key
-    version_id = data.aws_s3_bucket_object.assemble_artifact.version_id
+    bucket     = data.aws_s3_object.assemble_artifact.bucket
+    key        = data.aws_s3_object.assemble_artifact.key
+    version_id = data.aws_s3_object.assemble_artifact.version_id
   }
 
   layers = [
@@ -56,9 +56,9 @@ module "lambda_disassemble" {
   create_package = false
 
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.disassemble_artifact.bucket
-    key        = data.aws_s3_bucket_object.disassemble_artifact.key
-    version_id = data.aws_s3_bucket_object.disassemble_artifact.version_id
+    bucket     = data.aws_s3_object.disassemble_artifact.bucket
+    key        = data.aws_s3_object.disassemble_artifact.key
+    version_id = data.aws_s3_object.disassemble_artifact.version_id
   }
 
   layers = [
@@ -89,9 +89,9 @@ module "lambda_remove_connection_ban" {
   create_package = false
 
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.remove_connection_ban_artifact.bucket
-    key        = data.aws_s3_bucket_object.remove_connection_ban_artifact.key
-    version_id = data.aws_s3_bucket_object.remove_connection_ban_artifact.version_id
+    bucket     = data.aws_s3_object.remove_connection_ban_artifact.bucket
+    key        = data.aws_s3_object.remove_connection_ban_artifact.key
+    version_id = data.aws_s3_object.remove_connection_ban_artifact.version_id
   }
 
   layers = [
@@ -122,9 +122,9 @@ module "lambda_scavenger" {
   create_package = false
 
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.scavenger_artifact.bucket
-    key        = data.aws_s3_bucket_object.scavenger_artifact.key
-    version_id = data.aws_s3_bucket_object.scavenger_artifact.version_id
+    bucket     = data.aws_s3_object.scavenger_artifact.bucket
+    key        = data.aws_s3_object.scavenger_artifact.key
+    version_id = data.aws_s3_object.scavenger_artifact.version_id
   }
 
   environment_variables = {
@@ -206,9 +206,9 @@ module "lambda_send_usage_data" {
   create_package = false
 
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.customer_metrics_artifact.bucket
-    key        = data.aws_s3_bucket_object.customer_metrics_artifact.key
-    version_id = data.aws_s3_bucket_object.customer_metrics_artifact.version_id
+    bucket     = data.aws_s3_object.customer_metrics_artifact.bucket
+    key        = data.aws_s3_object.customer_metrics_artifact.key
+    version_id = data.aws_s3_object.customer_metrics_artifact.version_id
   }
 
   environment_variables = {

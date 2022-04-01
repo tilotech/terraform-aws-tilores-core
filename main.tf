@@ -93,9 +93,9 @@ module "lambda_layer_dispatcher_plugin" {
 
   create_package = false
   s3_existing_package = {
-    bucket     = data.aws_s3_bucket_object.dispatcher_plugin_artifact.bucket
-    key        = data.aws_s3_bucket_object.dispatcher_plugin_artifact.key
-    version_id = data.aws_s3_bucket_object.dispatcher_plugin_artifact.version_id
+    bucket     = data.aws_s3_object.dispatcher_plugin_artifact.bucket
+    key        = data.aws_s3_object.dispatcher_plugin_artifact.key
+    version_id = data.aws_s3_object.dispatcher_plugin_artifact.version_id
   }
 }
 
