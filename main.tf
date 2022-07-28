@@ -12,7 +12,7 @@ module "api_gateway" {
     "POST /" = {
       lambda_arn             = module.lambda_api.lambda_function_arn
       payload_format_version = "1.0"
-      authorization_type     = "JWT"
+      authorization_type     = aws_apigatewayv2_authorizer.api_authorizer.authorizer_type == "REQUEST" ? "CUSTOM" : "JWT"
       authorizer_id          = aws_apigatewayv2_authorizer.api_authorizer.id
     }
   }
@@ -20,7 +20,7 @@ module "api_gateway" {
 
 resource "aws_apigatewayv2_authorizer" "api_authorizer" {
   api_id           = module.api_gateway.apigatewayv2_api_id
-  authorizer_type  = "JWT"
+  authorizer_type  = var.authorizer_type
   identity_sources = ["$request.header.Authorization"]
   name             = format("%s-authorizer", local.prefix)
 
@@ -28,6 +28,13 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer" {
     audience = var.authorizer_audience
     issuer   = var.authorizer_issuer_url
   }
+
+  // Lambda Authorizer
+  authorizer_credentials_arn        = var.authorizer_credentials_arn
+  authorizer_payload_format_version = var.authorizer_payload_format_version
+  authorizer_result_ttl_in_seconds  = var.authorizer_result_ttl_in_seconds
+  authorizer_uri                    = var.authorizer_uri
+  enable_simple_responses           = var.enable_simple_responses
 }
 
 module "lambda_api" {
