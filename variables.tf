@@ -42,7 +42,7 @@ variable "authorizer_payload_format_version" {
 variable "authorizer_result_ttl_in_seconds" {
   type        = number
   description = "(Only for `REQUEST` type) The time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled. If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Supported only for HTTP API Lambda authorizers."
-  default     = null
+  default     = 0
 }
 
 variable "authorizer_uri" {
