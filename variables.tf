@@ -5,12 +5,50 @@ variable "resource_prefix" {
 
 variable "authorizer_issuer_url" {
   type        = string
-  description = "The issuer URL to be used by the authorizer (for cognito it is the user pool endpoint)"
+  description = "(Only used and required for `JWT` type) The issuer URL to be used by the authorizer (for cognito it is the user pool endpoint)"
+  default     = null
 }
 
 variable "authorizer_audience" {
   type        = list(string)
-  description = "A list of allowed token recipient identifiers  (for cognito it is the client ID)"
+  description = "(Only used and required for `JWT` type) A list of allowed token recipient identifiers  (for cognito it is the client ID)"
+  default     = null
+}
+
+variable "authorizer_type" {
+  type        = string
+  description = "The type of the authorizer attached to the API. Valid values: `JWT`, `REQUEST`."
+  default     = "JWT"
+}
+
+variable "authorizer_credentials_arn" {
+  type        = string
+  description = "(Only for `REQUEST` type) The IAM role for API Gateway to invoke the authorizer. Supported only for `REQUEST` authorizers."
+  default     = null
+}
+
+variable "authorizer_payload_format_version" {
+  type        = string
+  description = "(Only for `REQUEST` type) The format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers. Valid values: `1.0`, `2.0`."
+  default     = null
+}
+
+variable "authorizer_result_ttl_in_seconds" {
+  type        = number
+  description = "(Only for `REQUEST` type) The time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled. If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Supported only for HTTP API Lambda authorizers."
+  default     = 0
+}
+
+variable "authorizer_uri" {
+  type        = string
+  description = "(Only for `REQUEST` type) The authorizer's Uniform Resource Identifier (URI). For REQUEST authorizers this must be a well-formed Lambda function URI, such as the invoke_arn attribute of the aws_lambda_function resource. Supported only for REQUEST authorizers. Must be between 1 and 2048 characters in length."
+  default     = null
+}
+
+variable "enable_simple_responses" {
+  type        = bool
+  description = "(Only for `REQUEST` type) Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy. Supported only for HTTP APIs."
+  default     = null
 }
 
 variable "entity_event_stream_shard_count" {
