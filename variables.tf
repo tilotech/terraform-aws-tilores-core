@@ -15,6 +15,12 @@ variable "authorizer_audience" {
   default     = null
 }
 
+variable "create_default_stage" {
+  description = "Whether to create the default stage. This is useful when a custom default stage is needed, such as providing stage variables. Then you can provide a `false` here and create an `aws_apigatewayv2_stage` resource outside of the module with and attach your custom stage to the API using the output `api_id`."
+  type        = bool
+  default     = true
+}
+
 variable "authorizer_type" {
   type        = string
   description = "The type of the authorizer attached to the API. Valid values: `JWT`, `REQUEST`."
