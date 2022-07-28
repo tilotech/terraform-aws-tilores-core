@@ -7,6 +7,7 @@ module "api_gateway" {
   protocol_type = "HTTP"
 
   create_api_domain_name = false
+  create_default_stage   = var.create_default_stage
 
   integrations = {
     "POST /" = {
