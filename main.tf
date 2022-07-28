@@ -22,7 +22,7 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer" {
   api_id           = module.api_gateway.apigatewayv2_api_id
   authorizer_type  = var.authorizer_type
   identity_sources = ["$request.header.Authorization"]
-  name             = format("%s-authorizer", local.prefix)
+  name             = format("%s-%s-authorizer", local.prefix, var.authorizer_type)
 
   jwt_configuration {
     audience = var.authorizer_audience
@@ -35,6 +35,16 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer" {
   authorizer_result_ttl_in_seconds  = var.authorizer_result_ttl_in_seconds
   authorizer_uri                    = var.authorizer_uri
   enable_simple_responses           = var.enable_simple_responses
+  lifecycle {
+    replace_triggered_by = [null_resource.force_replace_authorizer]
+    create_before_destroy = true
+  }
+}
+
+resource "null_resource" "force_replace_authorizer" {
+  triggers = {
+    authorizer_type = var.authorizer_type
+  }
 }
 
 module "lambda_api" {
