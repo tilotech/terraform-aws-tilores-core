@@ -9,6 +9,8 @@ module "api_gateway" {
   create_api_domain_name = false
   create_default_stage   = var.create_default_stage
 
+  cors_configuration = var.cors_configuration
+
   integrations = {
     "POST /" = {
       lambda_arn             = module.lambda_api.lambda_function_arn
@@ -37,7 +39,7 @@ resource "aws_apigatewayv2_authorizer" "api_authorizer" {
   authorizer_uri                    = var.authorizer_uri
   enable_simple_responses           = var.enable_simple_responses
   lifecycle {
-    replace_triggered_by = [null_resource.force_replace_authorizer]
+    replace_triggered_by  = [null_resource.force_replace_authorizer]
     create_before_destroy = true
   }
 }
