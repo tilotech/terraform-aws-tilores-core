@@ -57,6 +57,12 @@ variable "enable_simple_responses" {
   default     = null
 }
 
+variable "cors_configuration" {
+  type        = any
+  description = "The CORS configuration for the API."
+  default     = {}
+}
+
 variable "entity_event_stream_shard_count" {
   description = "The amount of Kinesis shards used for entity event stream; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
   type        = string
