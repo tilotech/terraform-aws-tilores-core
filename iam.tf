@@ -5,7 +5,7 @@ resource "aws_iam_policy" "lambda_core" {
 
 data "aws_iam_policy_document" "lambda_core" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "s3:GetObject",
       "s3:PutObject",
@@ -21,7 +21,7 @@ data "aws_iam_policy_document" "lambda_core" {
     ]
   }
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "dynamodb:GetItem",
       "dynamodb:BatchGetItem",
@@ -46,12 +46,20 @@ data "aws_iam_policy_document" "lambda_core" {
     ]
   }
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "kinesis:ListStreams",
       "cloudwatch:PutMetricData"
     ]
     resources = ["*"]
+  }
+  statement {
+    effect  = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-*"]
   }
 }
 
@@ -62,7 +70,7 @@ resource "aws_iam_policy" "lambda_send_usage_data" {
 
 data "aws_iam_policy_document" "lambda_send_usage_data" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "cloudwatch:GetMetricData",
       "cloudwatch:PutMetricData"
@@ -70,7 +78,7 @@ data "aws_iam_policy_document" "lambda_send_usage_data" {
     resources = ["*"]
   }
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = [
       "dynamodb:DescribeTable"
     ]

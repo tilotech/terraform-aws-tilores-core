@@ -24,11 +24,10 @@ module "lambda_assemble" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  policies        = [
     aws_iam_policy.lambda_core.arn
   ]
-  number_of_policies = 2
+  number_of_policies = 1
 
   event_source_mapping = {
     kinesis = {
@@ -68,11 +67,10 @@ module "lambda_disassemble" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  policies        = [
     aws_iam_policy.lambda_core.arn
   ]
-  number_of_policies = 2
+  number_of_policies = 1
 }
 
 module "lambda_remove_connection_ban" {
@@ -101,11 +99,10 @@ module "lambda_remove_connection_ban" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  policies        = [
     aws_iam_policy.lambda_core.arn
   ]
-  number_of_policies = 2
+  number_of_policies = 1
 }
 
 module "lambda_scavenger" {
@@ -148,13 +145,10 @@ module "lambda_scavenger" {
 
   create_current_version_allowed_triggers = false
 
-  attach_policy = true
-  policy        = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-
   attach_policy_statements = true
-  policy_statements = {
+  policy_statements        = {
     s3 = {
-      effect = "Allow"
+      effect  = "Allow"
       actions = [
         "s3:DeleteObject"
       ]
@@ -167,6 +161,14 @@ module "lambda_scavenger" {
       effect    = "Allow"
       actions   = ["sqs:SendMessage"]
       resources = [aws_sqs_queue.scavenger_dead_letter_queue.arn]
+    }
+    cloudwatch = {
+      effect  = "Allow"
+      actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-scavenger"]
     }
   }
 }
@@ -231,11 +233,10 @@ module "lambda_send_usage_data" {
   create_current_version_allowed_triggers = false
 
   attach_policies = true
-  policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  policies        = [
     aws_iam_policy.lambda_send_usage_data.arn
   ]
-  number_of_policies = 2
+  number_of_policies = 1
 }
 
 resource "aws_lambda_function_event_invoke_config" "send_usage_data" {
