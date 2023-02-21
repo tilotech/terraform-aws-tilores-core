@@ -13,6 +13,46 @@ output "api_id" {
   description = "The ID of the GraphQL API."
 }
 
+output "core_policy_arn" {
+  value       = aws_iam_policy.lambda_core.arn
+  description = "The policy ARN granting access to core resources"
+}
+
+output "core_environment_variables" {
+  value       = local.core_envs
+  description = "The core lambda environment variables"
+}
+
+output "config_layer_arn" {
+  value = module.lambda_layer_rule_config.lambda_layer_arn
+  description = "The lambda layer ARN holding the config"
+}
+
+output "entity_bucket_name" {
+  value       = aws_s3_bucket.entity.id
+  description = "The name of the bucket holding the entities"
+}
+
+output "entity_bucket_arn" {
+  value       = aws_s3_bucket.entity.arn
+  description = "The ARN of the bucket holding the entities"
+}
+
+output "execution_plan_bucket_arn" {
+  value       = aws_s3_bucket.execution_plan.arn
+  description = "The ARN of the bucket holding the execution plans"
+}
+
+output "scavenger_dead_letter_queue_arn" {
+  value       = aws_sqs_queue.scavenger_dead_letter_queue.arn
+  description = "The ARN of the scavenger dead letter queue"
+}
+
+output "scavenger_dead_letter_queue_id" {
+  value       = aws_sqs_queue.scavenger_dead_letter_queue.id
+  description = "The ID of the scavenger dead letter queue"
+}
+
 output "table_entities_name" {
   value       = aws_dynamodb_table.entities.name
   description = "The DynamoDB name for entities table"
