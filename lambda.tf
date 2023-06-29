@@ -24,7 +24,7 @@ module "lambda_assemble" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies        = [
+  policies = [
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
@@ -37,40 +37,6 @@ module "lambda_assemble" {
       parallelization_factor = var.assemble_parallelization_factor
     }
   }
-}
-
-module "lambda_disassemble" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
-
-  function_name = format("%s-disassemble", local.prefix)
-  handler       = "disassemble"
-  runtime       = "provided.al2"
-  timeout       = 900
-  memory_size   = 1024
-  architectures = ["arm64"]
-
-  dead_letter_target_arn = aws_sqs_queue.dead_letter_queue.arn
-
-  create_package = false
-
-  s3_existing_package = {
-    bucket     = data.aws_s3_object.disassemble_artifact.bucket
-    key        = data.aws_s3_object.disassemble_artifact.key
-    version_id = data.aws_s3_object.disassemble_artifact.version_id
-  }
-
-  layers = [
-    module.lambda_layer_rule_config.lambda_layer_arn,
-  ]
-
-  environment_variables = local.core_envs
-
-  attach_policies = true
-  policies        = [
-    aws_iam_policy.lambda_core.arn
-  ]
-  number_of_policies = 1
 }
 
 module "lambda_remove_connection_ban" {
@@ -99,7 +65,7 @@ module "lambda_remove_connection_ban" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies        = [
+  policies = [
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
@@ -133,10 +99,6 @@ module "lambda_scavenger" {
       principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
       source_arn = format("%s:*", module.lambda_assemble.lambda_cloudwatch_log_group_arn)
     }
-    disassemble = {
-      principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
-      source_arn = format("%s:*", module.lambda_disassemble.lambda_cloudwatch_log_group_arn)
-    }
     remove_connection_ban = {
       principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
       source_arn = format("%s:*", module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_arn)
@@ -146,9 +108,9 @@ module "lambda_scavenger" {
   create_current_version_allowed_triggers = false
 
   attach_policy_statements = true
-  policy_statements        = {
+  policy_statements = {
     s3 = {
-      effect  = "Allow"
+      effect = "Allow"
       actions = [
         "s3:DeleteObject"
       ]
@@ -163,7 +125,7 @@ module "lambda_scavenger" {
       resources = [aws_sqs_queue.scavenger_dead_letter_queue.arn]
     }
     cloudwatch = {
-      effect  = "Allow"
+      effect = "Allow"
       actions = [
         "logs:CreateLogStream",
         "logs:PutLogEvents"
@@ -178,13 +140,6 @@ resource "aws_cloudwatch_log_subscription_filter" "assemble_scavenger" {
   filter_pattern  = "\"REMOVE-GARBAGE\""
   log_group_name  = module.lambda_assemble.lambda_cloudwatch_log_group_name
   name            = format("%s-%s", local.prefix, "assemble-scavenger")
-}
-
-resource "aws_cloudwatch_log_subscription_filter" "disassemble_scavenger" {
-  destination_arn = module.lambda_scavenger.lambda_function_arn
-  filter_pattern  = "\"REMOVE-GARBAGE\""
-  log_group_name  = module.lambda_disassemble.lambda_cloudwatch_log_group_name
-  name            = format("%s-%s", local.prefix, "disassemble-scavenger")
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scavenger" {
@@ -219,7 +174,6 @@ module "lambda_send_usage_data" {
     STREAM_RAW_DATA       = aws_kinesis_stream.kinesis_rawdata_stream.name
     FUNCTION_API          = module.lambda_api.lambda_function_name
     FUNCTION_ASSEMBLE     = module.lambda_assemble.lambda_function_name
-    FUNCTION_DISASSEMBLE  = module.lambda_disassemble.lambda_function_name
     TILOTECH_API_URL      = local.tilotech_api_url
     TILORES_INSTANCE_NAME = local.prefix
   }
@@ -233,7 +187,7 @@ module "lambda_send_usage_data" {
   create_current_version_allowed_triggers = false
 
   attach_policies = true
-  policies        = [
+  policies = [
     aws_iam_policy.lambda_send_usage_data.arn
   ]
   number_of_policies = 1
