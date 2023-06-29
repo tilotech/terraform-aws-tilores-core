@@ -1,7 +1,6 @@
 locals {
   dispatcher_plugin_artifact_key     = format("tilotech/tilores-core/%s/plugin-dispatcher.zip", var.core_version)
   assemble_artifact_key              = format("tilotech/tilores-core/%s/assemble.zip", var.core_version)
-  disassemble_artifact_key           = format("tilotech/tilores-core/%s/disassemble.zip", var.core_version)
   remove_connection_ban_artifact_key = format("tilotech/tilores-core/%s/removeconnectionban.zip", var.core_version)
   scavenger_artifact_key             = format("tilotech/func-scavenger/%s/scavenger.zip", var.scavenger_version)
   customer_metrics_artifact_key      = format("tilotech/func-customer-metrics/%s/send.zip", var.customer_metrics_version)
@@ -17,11 +16,6 @@ data "aws_s3_object" "dispatcher_plugin_artifact" {
 data "aws_s3_object" "assemble_artifact" {
   bucket = local.artifacts_bucket
   key    = local.assemble_artifact_key
-}
-
-data "aws_s3_object" "disassemble_artifact" {
-  bucket = local.artifacts_bucket
-  key    = local.disassemble_artifact_key
 }
 
 data "aws_s3_object" "remove_connection_ban_artifact" {

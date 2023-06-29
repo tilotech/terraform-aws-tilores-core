@@ -80,7 +80,6 @@ module "lambda_api" {
 
   environment_variables = merge(local.core_envs, {
     DISPATCHER_PLUGIN_PATH                = "/opt/plugin-dispatcher"
-    CORE_LAMBDA_DISASSEMBLE_ARN           = module.lambda_disassemble.lambda_function_arn
     CORE_LAMBDA_REMOVE_CONNECTION_BAN_ARN = module.lambda_remove_connection_ban.lambda_function_arn
   })
 
@@ -93,7 +92,6 @@ module "lambda_api" {
       effect  = "Allow",
       actions = ["lambda:InvokeFunction"]
       resources = [
-        module.lambda_disassemble.lambda_function_arn,
         module.lambda_remove_connection_ban.lambda_function_arn
       ]
     }

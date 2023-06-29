@@ -9,10 +9,51 @@
       "type": "metric",
       "properties": {
         "metrics": [
-          [ "AWS/Lambda", "Invocations", "FunctionName", "${PREFIX}-api", "Resource", "${PREFIX}-api", { "color": "#2ca02c" } ],
-          [ ".", "Throttles", ".", ".", ".", ".", { "yAxis": "right" } ],
-          [ ".", "ConcurrentExecutions", ".", ".", ".", ".", { "color": "#1f77b4", "stat": "Maximum" } ],
-          [ ".", "Errors", ".", ".", ".", ".", { "yAxis": "right" } ]
+          [
+            "AWS/Lambda",
+            "Invocations",
+            "FunctionName",
+            "${PREFIX}-api",
+            "Resource",
+            "${PREFIX}-api",
+            {
+              "color": "#2ca02c"
+            }
+          ],
+          [
+            ".",
+            "Throttles",
+            ".",
+            ".",
+            ".",
+            ".",
+            {
+              "yAxis": "right"
+            }
+          ],
+          [
+            ".",
+            "ConcurrentExecutions",
+            ".",
+            ".",
+            ".",
+            ".",
+            {
+              "color": "#1f77b4",
+              "stat": "Maximum"
+            }
+          ],
+          [
+            ".",
+            "Errors",
+            ".",
+            ".",
+            ".",
+            ".",
+            {
+              "yAxis": "right"
+            }
+          ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -30,10 +71,51 @@
       "type": "metric",
       "properties": {
         "metrics": [
-          [ "AWS/Lambda", "Invocations", "FunctionName", "${PREFIX}-assemble", "Resource", "${PREFIX}-assemble", { "color": "#2ca02c" } ],
-          [ ".", "Throttles", ".", ".", ".", ".", { "yAxis": "right" } ],
-          [ ".", "ConcurrentExecutions", ".", ".", ".", ".", { "color": "#1f77b4", "stat": "Maximum" } ],
-          [ ".", "Errors", ".", ".", ".", ".", { "yAxis": "right" } ]
+          [
+            "AWS/Lambda",
+            "Invocations",
+            "FunctionName",
+            "${PREFIX}-assemble",
+            "Resource",
+            "${PREFIX}-assemble",
+            {
+              "color": "#2ca02c"
+            }
+          ],
+          [
+            ".",
+            "Throttles",
+            ".",
+            ".",
+            ".",
+            ".",
+            {
+              "yAxis": "right"
+            }
+          ],
+          [
+            ".",
+            "ConcurrentExecutions",
+            ".",
+            ".",
+            ".",
+            ".",
+            {
+              "color": "#1f77b4",
+              "stat": "Maximum"
+            }
+          ],
+          [
+            ".",
+            "Errors",
+            ".",
+            ".",
+            ".",
+            ".",
+            {
+              "yAxis": "right"
+            }
+          ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -46,35 +128,38 @@
     {
       "height": 6,
       "width": 6,
-      "y": 12,
-      "x": 0,
-      "type": "metric",
-      "properties": {
-        "metrics": [
-          [ "AWS/Lambda", "Invocations", "FunctionName", "${PREFIX}-disassemble", "Resource", "${PREFIX}-disassemble", { "color": "#2ca02c" } ],
-          [ ".", "Throttles", ".", ".", ".", ".", { "yAxis": "right" } ],
-          [ ".", "ConcurrentExecutions", ".", ".", ".", ".", { "color": "#1f77b4", "stat": "Maximum" } ],
-          [ ".", "Errors", ".", ".", ".", ".", { "yAxis": "right" } ]
-        ],
-        "view": "timeSeries",
-        "stacked": false,
-        "region": "${REGION}",
-        "period": 60,
-        "stat": "Sum",
-        "title": "Disassemble Lambda"
-      }
-    },
-    {
-      "height": 6,
-      "width": 6,
       "y": 0,
       "x": 13,
       "type": "metric",
       "properties": {
         "metrics": [
-          [ "AWS/Kinesis", "PutRecords.Records", "StreamName", "${PREFIX}-rawdata-stream" ],
-          [ ".", "GetRecords.IteratorAge", ".", ".", { "yAxis": "right", "color": "#ff7f0e", "stat": "Maximum" } ],
-          [ ".", "WriteProvisionedThroughputExceeded", ".", ".", { "color": "#d62728", "yAxis": "left" } ]
+          [
+            "AWS/Kinesis",
+            "PutRecords.Records",
+            "StreamName",
+            "${PREFIX}-rawdata-stream"
+          ],
+          [
+            ".",
+            "GetRecords.IteratorAge",
+            ".",
+            ".",
+            {
+              "yAxis": "right",
+              "color": "#ff7f0e",
+              "stat": "Maximum"
+            }
+          ],
+          [
+            ".",
+            "WriteProvisionedThroughputExceeded",
+            ".",
+            ".",
+            {
+              "color": "#d62728",
+              "yAxis": "left"
+            }
+          ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -92,9 +177,33 @@
       "type": "metric",
       "properties": {
         "metrics": [
-          [ "AWS/Kinesis", "PutRecords.Records", "StreamName", "${PREFIX}-entity-stream" ],
-          [ ".", "GetRecords.IteratorAge", ".", ".", { "yAxis": "right", "color": "#ff7f0e", "stat": "Maximum" } ],
-          [ ".", "WriteProvisionedThroughputExceeded", ".", ".", { "color": "#d62728", "yAxis": "left" } ]
+          [
+            "AWS/Kinesis",
+            "PutRecords.Records",
+            "StreamName",
+            "${PREFIX}-entity-stream"
+          ],
+          [
+            ".",
+            "GetRecords.IteratorAge",
+            ".",
+            ".",
+            {
+              "yAxis": "right",
+              "color": "#ff7f0e",
+              "stat": "Maximum"
+            }
+          ],
+          [
+            ".",
+            "WriteProvisionedThroughputExceeded",
+            ".",
+            ".",
+            {
+              "color": "#d62728",
+              "yAxis": "left"
+            }
+          ]
         ],
         "view": "timeSeries",
         "stacked": false,
@@ -107,35 +216,32 @@
     {
       "height": 4,
       "width": 7,
-      "y": 4,
-      "x": 6,
-      "type": "metric",
-      "properties": {
-        "metrics": [
-          [ "AWS/Lambda", "Duration", "FunctionName", "${PREFIX}-api", "Resource", "${PREFIX}-api", { "label": "API" } ],
-          [ "...", "${PREFIX}-assemble", ".", "${PREFIX}-assemble", { "label": "Assemble" } ],
-          [ "...", "${PREFIX}-disassemble", ".", "${PREFIX}-disassemble", { "label": "Disassemble" } ]
-        ],
-        "view": "singleValue",
-        "region": "${REGION}",
-        "setPeriodToTimeRange": true,
-        "sparkline": false,
-        "singleValueFullPrecision": false,
-        "stat": "Average",
-        "period": 300,
-        "title": "Lambda Duration Average"
-      }
-    },
-    {
-      "height": 4,
-      "width": 7,
       "y": 0,
       "x": 6,
       "type": "metric",
       "properties": {
         "metrics": [
-          [ "TiloRes", "EntitiesCount", "Instance", "${PREFIX}", { "label": "Entity Count", "id": "m1" } ],
-          [ ".", "RecordsCount", ".", ".", { "color": "#bcbd22", "label": "Record Count", "id": "m2" } ]
+          [
+            "TiloRes",
+            "EntitiesCount",
+            "Instance",
+            "${PREFIX}",
+            {
+              "label": "Entity Count",
+              "id": "m1"
+            }
+          ],
+          [
+            ".",
+            "RecordsCount",
+            ".",
+            ".",
+            {
+              "color": "#bcbd22",
+              "label": "Record Count",
+              "id": "m2"
+            }
+          ]
         ],
         "view": "singleValue",
         "region": "${REGION}",
