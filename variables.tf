@@ -109,6 +109,12 @@ variable "customer_metrics_version" {
   default     = "v0"
 }
 
+variable "update_records" {
+  description = "Allows updating existing records if set to true"
+  type        = bool
+  default     = false
+}
+
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)
@@ -128,5 +134,6 @@ locals {
     KINESIS_ENTITY_STREAM       = aws_kinesis_stream.kinesis_entity_stream.name
     KINESIS_RAW_DATA_STREAM     = aws_kinesis_stream.kinesis_rawdata_stream.name
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
+    UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
   }
 }
