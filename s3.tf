@@ -5,6 +5,8 @@ resource "aws_s3_bucket" "entity" {
   lifecycle {
     prevent_destroy = false
   }
+
+  tags = var.tags_s3_entity
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "entity" {
@@ -37,6 +39,15 @@ resource "aws_s3_bucket_public_access_block" "entity" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_versioning" "entity" {
+  count  = coalesce(var.prepare_for_aws_backup, false) ? 1 : 0
+
+  bucket = aws_s3_bucket.entity.id
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket" "execution_plan" {

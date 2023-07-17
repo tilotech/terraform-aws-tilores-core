@@ -13,8 +13,10 @@ resource "aws_dynamodb_table" "entities" {
   }
 
   point_in_time_recovery {
-    enabled = true
+    enabled = coalesce(var.prepare_for_aws_backup, true)
   }
+
+  tags = var.tags_dynamodb
 }
 
 resource "aws_dynamodb_table" "records" {
@@ -32,8 +34,10 @@ resource "aws_dynamodb_table" "records" {
   }
 
   point_in_time_recovery {
-    enabled = true
+    enabled = coalesce(var.prepare_for_aws_backup, true)
   }
+
+  tags = var.tags_dynamodb
 }
 
 resource "aws_dynamodb_table" "rule_index" {
@@ -49,6 +53,12 @@ resource "aws_dynamodb_table" "rule_index" {
   server_side_encryption {
     enabled = true
   }
+
+  point_in_time_recovery {
+    enabled = coalesce(var.prepare_for_aws_backup, false)
+  }
+
+  tags = var.tags_dynamodb
 }
 
 resource "aws_dynamodb_table" "rule_reverse_index" {
@@ -64,6 +74,12 @@ resource "aws_dynamodb_table" "rule_reverse_index" {
   server_side_encryption {
     enabled = true
   }
+
+  point_in_time_recovery {
+    enabled = coalesce(var.prepare_for_aws_backup, false)
+  }
+
+  tags = var.tags_dynamodb
 }
 
 

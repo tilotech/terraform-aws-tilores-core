@@ -109,6 +109,24 @@ variable "customer_metrics_version" {
   default     = "v0"
 }
 
+variable "prepare_for_aws_backup" {
+  description = "Prepares resources to be backed up by AWS Backup if it is setup. Enables S3 versioning and DynamoDB point in time recovery"
+  type = bool
+  default = null
+}
+
+variable "tags_dynamodb" {
+  description = "A map of tags to assign to DynamoDB tables."
+  type        = map(string)
+  default     = {}
+}
+
+variable "tags_s3_entity" {
+  description = "A map of tags to assign to the entity S3 bucket."
+  type        = map(string)
+  default     = {}
+}
+
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)
