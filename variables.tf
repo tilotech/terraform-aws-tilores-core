@@ -109,10 +109,16 @@ variable "customer_metrics_version" {
   default     = "v0"
 }
 
+variable "update_records" {
+  description = "Allows updating existing records if set to true"
+  type        = bool
+  default     = false
+}
+
 variable "prepare_for_aws_backup" {
   description = "Prepares resources to be backed up by AWS Backup if it is setup. Enables S3 versioning and DynamoDB point in time recovery"
-  type = bool
-  default = null
+  type        = bool
+  default     = null
 }
 
 variable "tags_dynamodb" {
@@ -146,5 +152,6 @@ locals {
     KINESIS_ENTITY_STREAM       = aws_kinesis_stream.kinesis_entity_stream.name
     KINESIS_RAW_DATA_STREAM     = aws_kinesis_stream.kinesis_rawdata_stream.name
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
+    UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
   }
 }
