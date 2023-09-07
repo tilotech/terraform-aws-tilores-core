@@ -1,3 +1,17 @@
+locals {
+  resources_granted_to_lambda = compact(
+    [
+      aws_dynamodb_table.entities.arn,
+      aws_dynamodb_table.records.arn,
+      aws_dynamodb_table.rule_index.arn,
+      aws_dynamodb_table.rule_reverse_index.arn,
+      aws_kinesis_stream.kinesis_rawdata_stream.arn,
+      var.entity_event_stream_shard_count == "0" ? "" : aws_kinesis_stream.kinesis_entity_stream[0].arn,
+      aws_sqs_queue.dead_letter_queue.arn,
+    ]
+  )
+}
+
 resource "aws_iam_policy" "lambda_core" {
   name   = format("%s-%s-%s", local.prefix, "lambda", "core")
   policy = data.aws_iam_policy_document.lambda_core.json
@@ -35,15 +49,7 @@ data "aws_iam_policy_document" "lambda_core" {
       "sqs:SendMessage",
       "sqs:GetQueueUrl"
     ]
-    resources = [
-      aws_dynamodb_table.entities.arn,
-      aws_dynamodb_table.records.arn,
-      aws_dynamodb_table.rule_index.arn,
-      aws_dynamodb_table.rule_reverse_index.arn,
-      aws_kinesis_stream.kinesis_rawdata_stream.arn,
-      aws_kinesis_stream.kinesis_entity_stream.arn,
-      aws_sqs_queue.dead_letter_queue.arn,
-    ]
+    resources = local.resources_granted_to_lambda
   }
   statement {
     effect  = "Allow"

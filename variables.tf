@@ -149,7 +149,7 @@ locals {
     DYNAMODB_CONSISTENT_READ    = "TRUE"
     S3_ENTITY_BUCKET            = aws_s3_bucket.entity.bucket
     S3_EXECUTION_PLAN_BUCKET    = aws_s3_bucket.execution_plan.bucket
-    KINESIS_ENTITY_STREAM       = aws_kinesis_stream.kinesis_entity_stream.name
+    KINESIS_ENTITY_STREAM       = var.entity_event_stream_shard_count == "0" ? "" : aws_kinesis_stream.kinesis_entity_stream[0].name
     KINESIS_RAW_DATA_STREAM     = aws_kinesis_stream.kinesis_rawdata_stream.name
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
