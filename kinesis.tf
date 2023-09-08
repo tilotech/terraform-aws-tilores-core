@@ -1,4 +1,5 @@
 resource "aws_kinesis_stream" "kinesis_entity_stream" {
+  count           = var.entity_event_stream_shard_count == "0" ? 0 : 1
   name            = format("%s-%s", local.prefix, "entity-stream")
   shard_count     = var.entity_event_stream_shard_count
   kms_key_id      = "alias/aws/kinesis"
