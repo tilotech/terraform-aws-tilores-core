@@ -5,8 +5,9 @@ locals {
       aws_dynamodb_table.records.arn,
       aws_dynamodb_table.rule_index.arn,
       aws_dynamodb_table.rule_reverse_index.arn,
-      aws_kinesis_stream.kinesis_rawdata_stream.arn,
-      var.entity_event_stream_shard_count == "0" ? "" : aws_kinesis_stream.kinesis_entity_stream[0].arn,
+      var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].arn,
+      var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].arn,
+      var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_entity_stream[0].arn,
       aws_sqs_queue.dead_letter_queue.arn,
     ]
   )
@@ -47,7 +48,10 @@ data "aws_iam_policy_document" "lambda_core" {
       "kinesis:GetRecords",
       "kinesis:PutRecords",
       "sqs:SendMessage",
-      "sqs:GetQueueUrl"
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
     ]
     resources = local.resources_granted_to_lambda
   }
