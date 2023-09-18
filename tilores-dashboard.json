@@ -250,6 +250,85 @@
         "singleValueFullPrecision": false,
         "title": "Entity & Record Count"
       }
+    },
+    {
+      "height": 6,
+      "width": 6,
+      "y": 12,
+      "x": 13,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [
+            "AWS/SQS",
+            "NumberOfMessagesReceived",
+            "QueueName",
+            "${PREFIX}-rawdata",
+            {
+              "region": "${REGION}",
+              "label": "MessagesReceived"
+            }
+          ],
+          [
+            ".",
+            "NumberOfMessagesSent",
+            ".",
+            ".",
+            {
+              "region": "${REGION}",
+              "label": "MessagesSent"
+            }
+          ],
+          [
+            ".",
+            "NumberOfMessagesDeleted",
+            ".",
+            ".",
+            {
+              "region": "${REGION}",
+              "label": "MessagesDeleted"
+            }
+          ],
+          [
+            ".",
+            "ApproximateAgeOfOldestMessage",
+            ".",
+            ".",
+            {
+              "region": "${REGION}",
+              "stat": "Maximum",
+              "yAxis": "right",
+              "label": "AgeOfOldestMessage"
+            }
+          ],
+          [
+            ".",
+            "ApproximateNumberOfMessagesVisible",
+            ".",
+            ".",
+            {
+              "region": "${REGION}",
+              "label": "MessagesVisible"
+            }
+          ],
+          [
+            ".",
+            "ApproximateNumberOfMessagesNotVisible",
+            ".",
+            ".",
+            {
+              "region": "${REGION}",
+              "label": "MessagesNotVisible"
+            }
+          ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "${REGION}",
+        "stat": "Sum",
+        "period": 60,
+        "title": "Raw Data Queue"
+      }
     }
   ]
 }

@@ -52,7 +52,7 @@ resource "null_resource" "force_replace_authorizer" {
 
 module "lambda_api" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   function_name = format("%s-api", local.prefix)
   description   = "TiloRes API"
@@ -100,7 +100,7 @@ module "lambda_api" {
 
 module "lambda_layer_dispatcher_plugin" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   create_layer = true
 
@@ -119,7 +119,7 @@ module "lambda_layer_dispatcher_plugin" {
 
 module "lambda_layer_rule_config" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   create_layer = true
 

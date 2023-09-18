@@ -1,6 +1,28 @@
+locals {
+  all_assemble_event_source_mapping = {
+    sqs = var.assemble_parallelization_sqs == 0 ? null : {
+      event_source_arn = aws_sqs_queue.rawdata[0].arn
+      batch_size       = 1
+      scaling_config   = {
+        maximum_concurrency = var.assemble_parallelization_sqs
+      }
+    }
+    kinesis = var.rawdata_stream_shard_count == 0 ? null : {
+      event_source_arn       = aws_kinesis_stream.kinesis_rawdata_stream[0].arn
+      starting_position      = "TRIM_HORIZON"
+      batch_size             = 1
+      parallelization_factor = var.assemble_parallelization_factor
+    }
+  }
+  assemble_event_source_mapping = {
+    for source, config in local.all_assemble_event_source_mapping :
+    source => config if config != null
+  }
+}
+
 module "lambda_assemble" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   function_name = format("%s-assemble", local.prefix)
   handler       = "assemble"
@@ -24,24 +46,17 @@ module "lambda_assemble" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies = [
+  policies        = [
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
 
-  event_source_mapping = {
-    kinesis = {
-      event_source_arn       = aws_kinesis_stream.kinesis_rawdata_stream.arn
-      starting_position      = "TRIM_HORIZON"
-      batch_size             = 1
-      parallelization_factor = var.assemble_parallelization_factor
-    }
-  }
+  event_source_mapping = local.assemble_event_source_mapping
 }
 
 module "lambda_remove_connection_ban" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   function_name = format("%s-remove-connection-ban", local.prefix)
   handler       = "removeconnectionban"
@@ -65,7 +80,7 @@ module "lambda_remove_connection_ban" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies = [
+  policies        = [
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
@@ -73,7 +88,7 @@ module "lambda_remove_connection_ban" {
 
 module "lambda_scavenger" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   function_name = format("%s-scavenger", local.prefix)
   handler       = "scavenger"
@@ -108,9 +123,9 @@ module "lambda_scavenger" {
   create_current_version_allowed_triggers = false
 
   attach_policy_statements = true
-  policy_statements = {
+  policy_statements        = {
     s3 = {
-      effect = "Allow"
+      effect  = "Allow"
       actions = [
         "s3:DeleteObject"
       ]
@@ -125,7 +140,7 @@ module "lambda_scavenger" {
       resources = [aws_sqs_queue.scavenger_dead_letter_queue.arn]
     }
     cloudwatch = {
-      effect = "Allow"
+      effect  = "Allow"
       actions = [
         "logs:CreateLogStream",
         "logs:PutLogEvents"
@@ -151,7 +166,7 @@ resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scaveng
 
 module "lambda_send_usage_data" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 3.1"
+  version = "~> 6.0"
 
   function_name = format("%s-send-usage-data", local.prefix)
   handler       = "send"
@@ -171,7 +186,8 @@ module "lambda_send_usage_data" {
   environment_variables = {
     TABLE_ENTITIES        = aws_dynamodb_table.entities.id
     TABLE_RECORDS         = aws_dynamodb_table.records.id
-    STREAM_RAW_DATA       = aws_kinesis_stream.kinesis_rawdata_stream.name
+    STREAM_RAW_DATA       = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
+    QUEUE_RAW_DATA        = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
     FUNCTION_API          = module.lambda_api.lambda_function_name
     FUNCTION_ASSEMBLE     = module.lambda_assemble.lambda_function_name
     TILOTECH_API_URL      = local.tilotech_api_url
@@ -187,7 +203,7 @@ module "lambda_send_usage_data" {
   create_current_version_allowed_triggers = false
 
   attach_policies = true
-  policies = [
+  policies        = [
     aws_iam_policy.lambda_send_usage_data.arn
   ]
   number_of_policies = 1

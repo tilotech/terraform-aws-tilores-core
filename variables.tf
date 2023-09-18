@@ -65,20 +65,26 @@ variable "cors_configuration" {
 
 variable "entity_event_stream_shard_count" {
   description = "The amount of Kinesis shards used for entity event stream; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
-  type        = string
-  default     = "1"
+  type        = number
+  default     = 0
 }
 
 variable "rawdata_stream_shard_count" {
   description = "The amount of Kinesis shards used for the rawdata assembly stream, in case you expect a high amount of data ingestion (mutation submit) then increase this number; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
-  type        = string
-  default     = "1"
+  type        = number
+  default     = 0
 }
 
 variable "assemble_parallelization_factor" {
-  type        = string
+  type        = number
   description = "This value configures how many lambda consumers are listening on each raw stream shard. (Max and default is 10)"
-  default     = "10"
+  default     = 10
+}
+
+variable "assemble_parallelization_sqs" {
+  type        = number
+  description = "This value configures how many lambda consumers are listening on sqs raw data queue. (Between 2 and 1000, default is 10)"
+  default     = 10
 }
 
 variable "api_file" {
@@ -149,8 +155,9 @@ locals {
     DYNAMODB_CONSISTENT_READ    = "TRUE"
     S3_ENTITY_BUCKET            = aws_s3_bucket.entity.bucket
     S3_EXECUTION_PLAN_BUCKET    = aws_s3_bucket.execution_plan.bucket
-    KINESIS_ENTITY_STREAM       = var.entity_event_stream_shard_count == "0" ? "" : aws_kinesis_stream.kinesis_entity_stream[0].name
-    KINESIS_RAW_DATA_STREAM     = aws_kinesis_stream.kinesis_rawdata_stream.name
+    KINESIS_ENTITY_STREAM       = var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_entity_stream[0].name
+    KINESIS_RAW_DATA_STREAM     = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
+    RAW_DATA_SQS                = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
   }
