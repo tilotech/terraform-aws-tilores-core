@@ -38,6 +38,11 @@ output "entity_bucket_arn" {
   description = "The ARN of the bucket holding the entities"
 }
 
+output "entity_stream_arn" {
+  value       = var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_entity_stream[0].arn
+  description = "The ARN of the entity stream"
+}
+
 output "execution_plan_bucket_arn" {
   value       = aws_s3_bucket.execution_plan.arn
   description = "The ARN of the bucket holding the execution plans"
