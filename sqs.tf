@@ -18,3 +18,12 @@ resource "aws_sqs_queue" "rawdata" {
   kms_master_key_id                 = "alias/aws/sqs"
   kms_data_key_reuse_period_seconds = 3600
 }
+
+resource "aws_sqs_queue" "entity_stream" {
+  count                             = local.create_entity_stream_sqs ? 1 : 0
+  name                              = format("%s-%s", local.prefix, "entity-stream")
+  visibility_timeout_seconds        = 180
+  receive_wait_time_seconds         = 20
+  kms_master_key_id                 = "alias/aws/sqs"
+  kms_data_key_reuse_period_seconds = 3600
+}

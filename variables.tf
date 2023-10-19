@@ -63,6 +63,12 @@ variable "cors_configuration" {
   default     = {}
 }
 
+variable "create_entity_stream" {
+  description = "Whether to create the entity event stream or not, if set to true and entity_event_stream_shard_count is 0 then an SQS queue is created"
+  type        = bool
+  default     = false
+}
+
 variable "entity_event_stream_shard_count" {
   description = "The amount of Kinesis shards used for entity event stream; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
   type        = number
@@ -146,6 +152,9 @@ locals {
 
   rule_config_json_path = format("/opt/%s", replace(basename(var.rule_config_file), ".zip", ".json"))
 
+  create_entity_stream_sqs     = var.create_entity_stream && var.entity_event_stream_shard_count == 0
+  create_entity_stream_kinesis = var.create_entity_stream && var.entity_event_stream_shard_count != 0
+
   core_envs = {
     RULE_CONFIG                 = local.rule_config_json_path
     DYNAMODB_RULE_INDEX         = aws_dynamodb_table.rule_index.name
@@ -155,7 +164,9 @@ locals {
     DYNAMODB_CONSISTENT_READ    = "TRUE"
     S3_ENTITY_BUCKET            = aws_s3_bucket.entity.bucket
     S3_EXECUTION_PLAN_BUCKET    = aws_s3_bucket.execution_plan.bucket
-    KINESIS_ENTITY_STREAM       = var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_entity_stream[0].name
+    KINESIS_ENTITY_STREAM       = local.create_entity_stream_kinesis ? aws_kinesis_stream.kinesis_entity_stream[0].name : ""
+    SQS_ENTITY_STREAM           = local.create_entity_stream_sqs ? aws_sqs_queue.entity_stream[0].name : ""
+    ENTITY_STREAM_PROVIDER      = local.create_entity_stream_sqs ? "SQS" : ""
     KINESIS_RAW_DATA_STREAM     = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
     RAW_DATA_SQS                = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name

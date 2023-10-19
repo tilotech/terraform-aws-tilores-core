@@ -38,9 +38,14 @@ output "entity_bucket_arn" {
   description = "The ARN of the bucket holding the entities"
 }
 
-output "entity_stream_arn" {
-  value       = var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_entity_stream[0].arn
-  description = "The ARN of the entity stream"
+output "entity_stream_kinesis_arn" {
+  value       = local.create_entity_stream_kinesis ? aws_kinesis_stream.kinesis_entity_stream[0].arn : ""
+  description = "The ARN of the kinesis entity stream"
+}
+
+output "entity_stream_sqs_arn" {
+  value       = local.create_entity_stream_sqs ? aws_sqs_queue.entity_stream[0].arn : ""
+  description = "The ARN of the SQS entity stream"
 }
 
 output "execution_plan_bucket_arn" {
