@@ -7,7 +7,8 @@ locals {
       aws_dynamodb_table.rule_reverse_index.arn,
       var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].arn,
       var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].arn,
-      var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_entity_stream[0].arn,
+      local.create_entity_stream_kinesis ? aws_kinesis_stream.kinesis_entity_stream[0].arn : "",
+      local.create_entity_stream_sqs ? aws_sqs_queue.entity_stream[0].arn : "",
       aws_sqs_queue.dead_letter_queue.arn,
     ]
   )
