@@ -192,6 +192,7 @@ module "lambda_send_usage_data" {
     FUNCTION_ASSEMBLE     = module.lambda_assemble.lambda_function_name
     TILOTECH_API_URL      = local.tilotech_api_url
     TILORES_INSTANCE_NAME = local.prefix
+    STORE_LOCAL_METRICS   = var.create_dashboard ? "TRUE" : "FALSE"
   }
 
   allowed_triggers = {

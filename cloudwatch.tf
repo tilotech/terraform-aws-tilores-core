@@ -35,6 +35,7 @@ resource "aws_cloudwatch_event_target" "send_usage_data" {
 }
 
 resource "aws_cloudwatch_dashboard" "tilores_dashboard" {
+  count = var.create_dashboard ? 1 : 0
   dashboard_body = templatefile(format("%s/tilores-dashboard.json", path.module), {
     PREFIX = local.prefix
     REGION = data.aws_region.current.id

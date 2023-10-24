@@ -127,6 +127,12 @@ variable "update_records" {
   default     = false
 }
 
+variable "create_dashboard" {
+  description = "Defines whether to create a cloudwatch dashboard"
+  type        = bool
+  default     = true
+}
+
 variable "prepare_for_aws_backup" {
   description = "Prepares resources to be backed up by AWS Backup if it is setup. Enables S3 versioning and DynamoDB point in time recovery"
   type        = bool
