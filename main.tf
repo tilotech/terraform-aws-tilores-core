@@ -1,6 +1,6 @@
 locals {
   use_lambda_authorizer = var.ip_range_allow_list != null
-  authorizer_name       = local.use_lambda_authorizer ? "CUSTOM" : var.authorizer_type
+  authorizer_name       = local.use_lambda_authorizer ? "CUSTOM" : format("%s-B", var.authorizer_type)
 
   authorizer_params = local.use_lambda_authorizer ? {
     authorizer_type                   = "REQUEST"
