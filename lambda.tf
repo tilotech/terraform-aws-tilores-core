@@ -3,7 +3,7 @@ locals {
     sqs = var.assemble_parallelization_sqs == 0 ? null : {
       event_source_arn = aws_sqs_queue.rawdata[0].arn
       batch_size       = 1
-      scaling_config   = {
+      scaling_config = {
         maximum_concurrency = var.assemble_parallelization_sqs
       }
     }
@@ -22,7 +22,7 @@ locals {
 
 module "lambda_assemble" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   function_name = format("%s-assemble", local.prefix)
   handler       = "assemble"
@@ -46,7 +46,7 @@ module "lambda_assemble" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies        = [
+  policies = [
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
@@ -56,7 +56,7 @@ module "lambda_assemble" {
 
 module "lambda_remove_connection_ban" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   function_name = format("%s-remove-connection-ban", local.prefix)
   handler       = "removeconnectionban"
@@ -80,7 +80,7 @@ module "lambda_remove_connection_ban" {
   environment_variables = local.core_envs
 
   attach_policies = true
-  policies        = [
+  policies = [
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
@@ -88,7 +88,7 @@ module "lambda_remove_connection_ban" {
 
 module "lambda_scavenger" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   function_name = format("%s-scavenger", local.prefix)
   handler       = "scavenger"
@@ -123,9 +123,9 @@ module "lambda_scavenger" {
   create_current_version_allowed_triggers = false
 
   attach_policy_statements = true
-  policy_statements        = {
+  policy_statements = {
     s3 = {
-      effect  = "Allow"
+      effect = "Allow"
       actions = [
         "s3:DeleteObject"
       ]
@@ -140,7 +140,7 @@ module "lambda_scavenger" {
       resources = [aws_sqs_queue.scavenger_dead_letter_queue.arn]
     }
     cloudwatch = {
-      effect  = "Allow"
+      effect = "Allow"
       actions = [
         "logs:CreateLogStream",
         "logs:PutLogEvents"
@@ -166,7 +166,7 @@ resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scaveng
 
 module "lambda_send_usage_data" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   function_name = format("%s-send-usage-data", local.prefix)
   handler       = "send"
@@ -204,7 +204,7 @@ module "lambda_send_usage_data" {
   create_current_version_allowed_triggers = false
 
   attach_policies = true
-  policies        = [
+  policies = [
     aws_iam_policy.lambda_send_usage_data.arn
   ]
   number_of_policies = 1

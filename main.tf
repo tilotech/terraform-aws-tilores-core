@@ -8,7 +8,7 @@ locals {
     authorizer_payload_format_version = "2.0"
     authorizer_uri                    = module.authorizer[0].lambda_function_invoke_arn
     enable_simple_responses           = true
-  } : {
+    } : {
     authorizer_type                   = var.authorizer_type
     authorizer_credentials_arn        = var.authorizer_credentials_arn
     authorizer_payload_format_version = var.authorizer_payload_format_version
@@ -19,7 +19,7 @@ locals {
 
 module "api_gateway" {
   source  = "terraform-aws-modules/apigateway-v2/aws"
-  version = "~> 1.6"
+  version = "~> 3.1"
 
   name          = format("%s-api", local.prefix)
   description   = "TiloRes API Gateway"
@@ -72,7 +72,7 @@ resource "null_resource" "force_replace_authorizer" {
 module "authorizer" {
   count   = local.use_lambda_authorizer ? 1 : 0
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 4.11"
+  version = "7.2.1"
 
   function_name = format("%s-authorizer", local.prefix)
   handler       = "authorizer"
@@ -90,7 +90,7 @@ module "authorizer" {
   }
 
   attach_policies = true
-  policies        = [
+  policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   ]
   number_of_policies = 1
@@ -112,7 +112,7 @@ resource "aws_lambda_permission" "authorizer" {
 
 module "lambda_api" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   function_name = format("%s-api", local.prefix)
   description   = "TiloRes API"
@@ -147,10 +147,10 @@ module "lambda_api" {
   policy        = aws_iam_policy.lambda_core.arn
 
   attach_policy_statements = true
-  policy_statements        = {
+  policy_statements = {
     lambda = {
-      effect    = "Allow",
-      actions   = ["lambda:InvokeFunction"]
+      effect  = "Allow",
+      actions = ["lambda:InvokeFunction"]
       resources = [
         module.lambda_remove_connection_ban.lambda_function_arn
       ]
@@ -160,7 +160,7 @@ module "lambda_api" {
 
 module "lambda_layer_dispatcher_plugin" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   create_layer = true
 
@@ -169,7 +169,7 @@ module "lambda_layer_dispatcher_plugin" {
   compatible_runtimes      = ["provided.al2"]
   compatible_architectures = ["arm64"]
 
-  create_package      = false
+  create_package = false
   s3_existing_package = {
     bucket     = data.aws_s3_object.dispatcher_plugin_artifact.bucket
     key        = data.aws_s3_object.dispatcher_plugin_artifact.key
@@ -179,7 +179,7 @@ module "lambda_layer_dispatcher_plugin" {
 
 module "lambda_layer_rule_config" {
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 6.0"
+  version = "7.2.1"
 
   create_layer = true
 
