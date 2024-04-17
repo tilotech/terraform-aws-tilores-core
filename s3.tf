@@ -18,6 +18,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "entity" {
     expiration {
       expired_object_delete_marker = true
     }
+    dynamic noncurrent_version_expiration {
+      for_each = coalesce(var.prepare_for_aws_backup, false) ? [1] : []
+      content {
+        noncurrent_days = 1
+      }
+    }
   }
 }
 
