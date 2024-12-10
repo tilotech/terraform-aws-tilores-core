@@ -111,7 +111,13 @@ variable "api_file" {
 }
 
 variable "api_access_log_destination_arn" {
-  description = "ARN of the CloudWatch Logs log group to receive API gateweay access logs. Any trailing :* is trimmed from the ARN. (Default is null)"
+  description = "ARN of the CloudWatch Logs log group to receive API gateweay access logs. Any trailing :* is trimmed from the ARN. (If used then api_access_log_format must also be provided, Default is null)"
+  type        = string
+  default     = null
+}
+
+variable "api_access_log_format" {
+  description = "Single line format of the access logs of data, as specified by selected $context variables. (If used then api_access_log_destination_arn must also be provided, Default is null)"
   type        = string
   default     = null
 }
