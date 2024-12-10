@@ -110,6 +110,12 @@ variable "api_file" {
   description = "The path to the built and zipped API artifact. (automatically created using tilores-cli)"
 }
 
+variable "api_access_log_destination_arn" {
+  description = "ARN of the CloudWatch Logs log group to receive API gateweay access logs. Any trailing :* is trimmed from the ARN. (Default is null)"
+  type        = string
+  default     = null
+}
+
 variable "rule_config_file" {
   description = "The path to the zipped rule config json file. (automatically created using tilores-cli)"
   type        = string
