@@ -40,6 +40,7 @@ module "api_gateway" {
   }
 
   default_stage_access_log_destination_arn = var.api_access_log_destination_arn
+  default_stage_access_log_format = var.api_access_log_format
 }
 
 resource "aws_apigatewayv2_authorizer" "api_authorizer" {

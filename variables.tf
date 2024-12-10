@@ -116,6 +116,12 @@ variable "api_access_log_destination_arn" {
   default     = null
 }
 
+variable "api_access_log_format" {
+  description = "Single line format of the access logs of data, as specified by selected $context variables. (If used then api_access_log_destination_arn must also be provided, Default is null)"
+  type        = string
+  default     = null
+}
+
 variable "rule_config_file" {
   description = "The path to the zipped rule config json file. (automatically created using tilores-cli)"
   type        = string
