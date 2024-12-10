@@ -38,6 +38,8 @@ module "api_gateway" {
       authorizer_id          = aws_apigatewayv2_authorizer.api_authorizer.id
     }
   }
+
+  default_stage_access_log_destination_arn = var.api_access_log_destination_arn
 }
 
 resource "aws_apigatewayv2_authorizer" "api_authorizer" {
