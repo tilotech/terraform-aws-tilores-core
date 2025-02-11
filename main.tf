@@ -40,7 +40,7 @@ module "api_gateway" {
   }
 
   default_stage_access_log_destination_arn = var.api_access_log_destination_arn
-  default_stage_access_log_format = var.api_access_log_format
+  default_stage_access_log_format          = var.api_access_log_format
 }
 
 resource "aws_apigatewayv2_authorizer" "api_authorizer" {
@@ -103,6 +103,8 @@ module "authorizer" {
     ISSUER_URL          = var.authorizer_issuer_url
     AUDIENCE            = join(" ", var.authorizer_audience)
   }
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 resource "aws_lambda_permission" "authorizer" {
@@ -159,6 +161,8 @@ module "lambda_api" {
       ]
     }
   }
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 module "lambda_layer_dispatcher_plugin" {
@@ -178,6 +182,8 @@ module "lambda_layer_dispatcher_plugin" {
     key        = data.aws_s3_object.dispatcher_plugin_artifact.key
     version_id = data.aws_s3_object.dispatcher_plugin_artifact.version_id
   }
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 module "lambda_layer_rule_config" {
@@ -193,4 +199,6 @@ module "lambda_layer_rule_config" {
 
   create_package         = false
   local_existing_package = var.rule_config_file
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
