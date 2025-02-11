@@ -52,6 +52,8 @@ module "lambda_assemble" {
   number_of_policies = 1
 
   event_source_mapping = local.assemble_event_source_mapping
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 module "lambda_remove_connection_ban" {
@@ -84,6 +86,8 @@ module "lambda_remove_connection_ban" {
     aws_iam_policy.lambda_core.arn
   ]
   number_of_policies = 1
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 module "lambda_scavenger" {
@@ -148,6 +152,8 @@ module "lambda_scavenger" {
       resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-scavenger"]
     }
   }
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "assemble_scavenger" {
@@ -208,6 +214,8 @@ module "lambda_send_usage_data" {
     aws_iam_policy.lambda_send_usage_data.arn
   ]
   number_of_policies = 1
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 resource "aws_lambda_function_event_invoke_config" "send_usage_data" {

@@ -175,6 +175,12 @@ variable "tags_s3_entity" {
   default     = {}
 }
 
+variable "cloudwatch_logs_retention_in_days" {
+  description = "Number of days to keep the cloudwatch logs for lambda functions."
+  type        = number
+  default     = null
+}
+
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)
