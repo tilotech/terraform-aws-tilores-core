@@ -111,6 +111,7 @@ module "lambda_scavenger" {
 
   environment_variables = {
     DEAD_LETTER_QUEUE_URL = aws_sqs_queue.scavenger_dead_letter_queue.id
+    S3_ANALYTICS_BUCKET   = var.enable_analytics ? module.analytics[0].bucket_name : ""
   }
 
   allowed_triggers = {
@@ -127,31 +128,45 @@ module "lambda_scavenger" {
   create_current_version_allowed_triggers = false
 
   attach_policy_statements = true
-  policy_statements = {
-    s3 = {
-      effect = "Allow"
-      actions = [
-        "s3:DeleteObject"
-      ]
-      resources = [
-        format("%s/*", aws_s3_bucket.entity.arn),
-        format("%s/*", aws_s3_bucket.execution_plan.arn)
-      ]
+  policy_statements = merge(
+    {
+      s3 = {
+        effect = "Allow"
+        actions = [
+          "s3:DeleteObject"
+        ]
+        resources = [
+          format("%s/*", aws_s3_bucket.entity.arn),
+          format("%s/*", aws_s3_bucket.execution_plan.arn)
+        ]
+      },
+      sqs = {
+        effect    = "Allow"
+        actions   = ["sqs:SendMessage"]
+        resources = [aws_sqs_queue.scavenger_dead_letter_queue.arn]
+      }
+      cloudwatch = {
+        effect = "Allow"
+        actions = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-scavenger"]
+      }
     },
-    sqs = {
-      effect    = "Allow"
-      actions   = ["sqs:SendMessage"]
-      resources = [aws_sqs_queue.scavenger_dead_letter_queue.arn]
-    }
-    cloudwatch = {
-      effect = "Allow"
-      actions = [
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ]
-      resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-scavenger"]
-    }
-  }
+    var.enable_analytics ? {
+      s3Analytics = {
+        effect = "Allow"
+        actions = [
+          "s3:PutObject"
+        ]
+        resources = [
+          "${module.analytics[0].s3_entities_snapshot_arn}/*",
+          "${module.analytics[0].s3_records_snapshot_arn}/*"
+        ]
+      }
+    } : {}
+  )
 
   cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }

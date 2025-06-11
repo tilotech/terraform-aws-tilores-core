@@ -368,6 +368,11 @@ resource "aws_iam_policy" "aggregate_analytics" {
   policy = data.aws_iam_policy_document.aggregate_analytics.json
 }
 
+locals {
+  s3_entities_snapshot_arn = "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.entities_snapshots.name}"
+  s3_records_snapshot_arn  = "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.records_snapshots.name}"
+}
+
 data "aws_iam_policy_document" "aggregate_analytics" {
   statement {
     effect = "Allow"
@@ -405,8 +410,8 @@ data "aws_iam_policy_document" "aggregate_analytics" {
     ]
     resources = [
       "${aws_s3_bucket.analytics.arn}/${local.analytics_output_path}/*",
-      "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.entities_snapshots.name}/*",
-      "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.records_snapshots.name}/*",
+      "${local.s3_entities_snapshot_arn}/*",
+      "${local.s3_records_snapshot_arn}/*",
       "${aws_s3_bucket.analytics.arn}/${local.snapshots_meta_file}"
     ]
   }
