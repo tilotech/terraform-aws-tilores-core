@@ -240,6 +240,11 @@ resource "aws_glue_catalog_table" "entities_snapshots" {
       comment = "type dependent cliques representation; always null if type equals elist"
     }
     columns {
+      name    = "data_location"
+      type    = "string"
+      comment = "data location of the entity header and record data in S3"
+    }
+    columns {
       name    = "create_timestamp"
       type    = "timestamp"
       comment = "timestamp of when an entity was created"
@@ -535,7 +540,7 @@ resource "aws_lambda_invocation" "aggregate_analytics_create_entity_view" {
   input = jsonencode({
     query = <<EOT
       CREATE OR REPLACE VIEW ${local.entities_view} AS
-		  SELECT entity_id, version, type, record_count, edge_count, rule_edge_count, duplicate_count, clique_count, records, edges, duplicates, cliques, create_timestamp, update_timestamp, date FROM (
+		  SELECT entity_id, version, type, record_count, edge_count, rule_edge_count, duplicate_count, clique_count, records, edges, duplicates, cliques, data_location, create_timestamp, update_timestamp, date FROM (
 	      SELECT *, row_number() over (partition by entity_id order by update_timestamp desc) as rn FROM {{entities}}
 		  )
 		  WHERE rn = 1 AND deleted = false
