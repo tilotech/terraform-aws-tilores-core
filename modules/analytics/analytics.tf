@@ -47,7 +47,7 @@ resource "aws_athena_workgroup" "analytics" {
       selected_engine_version = "Athena engine version 3"
     }
     result_configuration {
-      output_location = format("s3://%s/%s", aws_s3_bucket.analytics.id, local.analytics_output_path)
+      output_location = format("s3://%s/%s", aws_s3_bucket.analytics.id, local.query_output_path)
     }
   }
 }
@@ -387,8 +387,10 @@ resource "aws_iam_policy" "aggregate_analytics" {
 }
 
 locals {
+  glue_catalog_arn         = "arn:aws:glue:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:catalog"
   s3_entities_snapshot_arn = "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.entities_snapshots.name}"
   s3_records_snapshot_arn  = "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.records_snapshots.name}"
+  s3_query_output_arn      = "${aws_s3_bucket.analytics.arn}/${local.query_output_path}"
 }
 
 data "aws_iam_policy_document" "aggregate_analytics" {
@@ -427,7 +429,7 @@ data "aws_iam_policy_document" "aggregate_analytics" {
       "s3:PutObject"
     ]
     resources = [
-      "${aws_s3_bucket.analytics.arn}/${local.analytics_output_path}/*",
+      "${local.s3_query_output_arn}/*",
       "${local.s3_entities_snapshot_arn}/*",
       "${local.s3_records_snapshot_arn}/*",
       "${aws_s3_bucket.analytics.arn}/${local.snapshots_meta_file}"
@@ -451,8 +453,8 @@ data "aws_iam_policy_document" "aggregate_analytics" {
       "glue:UpdatePartition"
     ]
     resources = [
-      "arn:aws:glue:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:catalog",
-      "arn:aws:glue:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:catalog/*",
+      local.glue_catalog_arn,
+      "${local.glue_catalog_arn}/*",
       aws_glue_catalog_database.analytics.arn,
       aws_glue_catalog_table.entities_operational.arn,
       aws_glue_catalog_table.entities_snapshots.arn,
@@ -468,8 +470,8 @@ data "aws_iam_policy_document" "aggregate_analytics" {
       "glue:UpdateTable"
     ]
     resources = [
-      "arn:aws:glue:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:catalog",
-      "arn:aws:glue:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:catalog/*",
+      local.glue_catalog_arn,
+      "${local.glue_catalog_arn}/*",
       aws_glue_catalog_database.analytics.arn,
       replace(aws_glue_catalog_table.entities_snapshots.arn, aws_glue_catalog_table.entities_snapshots.name, local.entities_view),
       replace(aws_glue_catalog_table.records_snapshots.arn, aws_glue_catalog_table.records_snapshots.name, local.records_view)

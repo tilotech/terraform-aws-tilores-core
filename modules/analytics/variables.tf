@@ -34,8 +34,8 @@ variable "snapshot_query_mode" {
 }
 
 locals {
-  analytics_output_path = "query-results"
-  snapshots_meta_file   = "snapshots.meta"
-  entities_view         = "entities"
-  records_view          = "records"
+  query_output_path   = "query_results"
+  snapshots_meta_file = "snapshots.meta"
+  entities_view       = "entities"
+  records_view        = "records"
 }
