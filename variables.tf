@@ -211,6 +211,7 @@ locals {
     ENTITY_STREAM_PROVIDER      = local.create_entity_stream_sqs ? "SQS" : ""
     KINESIS_RAW_DATA_STREAM     = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
     RAW_DATA_SQS                = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
+    SNAPSHOT_REPO_PROVIDER      = var.enable_analytics ? "ATHENA" : "NONE"
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
   }
