@@ -535,7 +535,7 @@ resource "aws_lambda_invocation" "aggregate_analytics_create_entity_view" {
   input = jsonencode({
     query = <<EOT
       CREATE OR REPLACE VIEW ${local.entities_view} AS
-		  SELECT entity_id, version, type, record_count, edge_count, rule_edge_count, duplicate_count, clique_count, records, edges, duplicates, create_timestamp, update_timestamp, date FROM (
+		  SELECT entity_id, version, type, record_count, edge_count, rule_edge_count, duplicate_count, clique_count, records, edges, duplicates, cliques, create_timestamp, update_timestamp, date FROM (
 	      SELECT *, row_number() over (partition by entity_id order by update_timestamp desc) as rn FROM {{entities}}
 		  )
 		  WHERE rn = 1 AND deleted = false
