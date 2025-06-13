@@ -234,7 +234,11 @@ resource "aws_glue_catalog_table" "entities_snapshots" {
       type    = "string"
       comment = "type dependent duplicate representation"
     }
-    // TODO: this is missing the cliques column
+    columns {
+      name    = "cliques"
+      type    = "map<string,array<struct<n:array<int>,p:string>>>"
+      comment = "type dependent cliques representation; always null if type equals elist"
+    }
     columns {
       name    = "create_timestamp"
       type    = "timestamp"
@@ -244,6 +248,11 @@ resource "aws_glue_catalog_table" "entities_snapshots" {
       name    = "update_timestamp"
       type    = "timestamp"
       comment = "timestamp of when an entity was last modified"
+    }
+    columns {
+      name    = "deleted"
+      type    = "boolean"
+      comment = "if the entity was deleted or not; if true, then most of the other fields are null"
     }
   }
 
@@ -308,6 +317,11 @@ resource "aws_glue_catalog_table" "records_snapshots" {
       name    = "data"
       type    = "string"
       comment = "client specific record data"
+    }
+    columns {
+      name    = "deleted"
+      type    = "boolean"
+      comment = "if the record was deleted or not; if true, then most of the other fields are null"
     }
   }
 
@@ -526,7 +540,7 @@ resource "aws_lambda_invocation" "aggregate_analytics_create_entity_view" {
 		  SELECT entity_id, version, type, record_count, edge_count, rule_edge_count, duplicate_count, clique_count, records, edges, duplicates, create_timestamp, update_timestamp, date FROM (
 	      SELECT *, row_number() over (partition by entity_id order by update_timestamp desc) as rn FROM {{entities}}
 		  )
-		  WHERE rn = 1
+		  WHERE rn = 1 AND deleted = false
     EOT
   })
 }
@@ -540,7 +554,7 @@ resource "aws_lambda_invocation" "aggregate_analytics_create_record_view" {
 		  SELECT record_id, version, entity_id, submit_timestamp, assemble_timestamp, data, date FROM (
 	      SELECT *, row_number() over (partition by record_id order by assemble_timestamp desc) as rn FROM {{records}}
 		  )
-		  WHERE rn = 1
+		  WHERE rn = 1 AND deleted = false
     EOT
   })
 }
