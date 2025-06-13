@@ -369,6 +369,7 @@ module "lambda_aggregate_analytics" {
     ATHENA_WORKGROUP                 = aws_athena_workgroup.analytics.name
     S3_ANALYTICS_BUCKET              = aws_s3_bucket.analytics.bucket
     S3_ANALYTICS_SNAPSHOTS_META_FILE = local.snapshots_meta_file
+    SNAPSHOT_QUERY_MODE              = var.snapshot_query_mode
   }
 
   attach_policies = true

@@ -163,6 +163,12 @@ variable "enable_analytics" {
   default     = false
 }
 
+variable "snapshot_query_mode" {
+  description = "Query mode for snapshot creation: WAIT (ensures successful query execution) or FIRE_AND_FORGET (ensures that the query was started but will not wait for it to finish). Ignored if enable_analytics is false."
+  type        = string
+  default     = "WAIT"
+}
+
 variable "prepare_for_aws_backup" {
   description = "Prepares resources to be backed up by AWS Backup if it is setup. Enables S3 versioning and DynamoDB point in time recovery"
   type        = bool

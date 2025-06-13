@@ -28,6 +28,11 @@ variable "entity_s3_bucket_arn" {
   type        = string
 }
 
+variable "snapshot_query_mode" {
+  description = "Query mode for snapshot creation: WAIT (ensures successful query execution) or FIRE_AND_FORGET (ensures that the query was started but will not wait for it to finish)."
+  type        = string
+}
+
 locals {
   analytics_output_path = "query-results"
   snapshots_meta_file   = "snapshots.meta"
