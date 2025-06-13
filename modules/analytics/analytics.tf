@@ -349,13 +349,11 @@ module "lambda_aggregate_analytics" {
 
   create_package = false
 
-  local_existing_package = "/home/ska/gitlab.com/tilotech/tilores-core/bin/aggregate-analytics.zip" // TODO: remove me and enable s3_existing_package below
-
-  # s3_existing_package = {
-  #   bucket     = data.aws_s3_object.aggregate_analytics_artifact.bucket
-  #   key        = data.aws_s3_object.aggregate_analytics_artifact.key
-  #   version_id = data.aws_s3_object.aggregate_analytics_artifact.version_id
-  # }
+  s3_existing_package = {
+    bucket     = data.aws_s3_object.aggregate_analytics_artifact.bucket
+    key        = data.aws_s3_object.aggregate_analytics_artifact.key
+    version_id = data.aws_s3_object.aggregate_analytics_artifact.version_id
+  }
 
   environment_variables = {
     ATHENA_SOURCE_TABLE              = aws_glue_catalog_table.entities_operational.name
