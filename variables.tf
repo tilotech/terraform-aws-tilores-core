@@ -160,7 +160,7 @@ variable "create_dashboard" {
 variable "enable_analytics" {
   description = "Defines whether to create the resources required for improved analytic queries"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "snapshot_query_mode" {
