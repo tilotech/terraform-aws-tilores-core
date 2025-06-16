@@ -13,6 +13,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "analytics" {
   rule {
     id     = "cleanup"
     status = "Enabled"
+    filter {}
     expiration {
       expired_object_delete_marker = true
     }
