@@ -24,7 +24,7 @@ output "core_environment_variables" {
 }
 
 output "config_layer_arn" {
-  value = module.lambda_layer_rule_config.lambda_layer_arn
+  value       = module.lambda_layer_rule_config.lambda_layer_arn
   description = "The lambda layer ARN holding the config"
 }
 
@@ -81,4 +81,69 @@ output "table_records_name" {
 output "table_records_arn" {
   value       = aws_dynamodb_table.records.arn
   description = "The DynamoDB arn for records table"
+}
+
+output "analytics_bucket_name" {
+  value       = var.enable_analytics ? module.analytics[0].bucket_name : ""
+  description = "The name of the bucket holding the analytics data (if enabled)"
+}
+
+output "analytics_bucket_arn" {
+  value       = var.enable_analytics ? module.analytics[0].bucket_arn : ""
+  description = "The ARN of the analytics S3 bucket (if enabled)."
+}
+
+output "analytics_s3_entities_snapshot_arn" {
+  value       = var.enable_analytics ? module.analytics[0].s3_entities_snapshot_arn : ""
+  description = "The full ARN to the location of the entities snapshot (if enabled)."
+}
+
+output "analytics_glue_entities_snapshot_table_arn" {
+  value       = var.enable_analytics ? module.analytics[0].glue_entities_snapshot_table_arn : ""
+  description = "The ARN of the entities snapshot table (if enabled)."
+}
+
+output "analytics_s3_records_snapshot_arn" {
+  value       = var.enable_analytics ? module.analytics[0].s3_records_snapshot_arn : ""
+  description = "The full ARN to the location of the records snapshot (if enabled)."
+}
+
+output "analytics_glue_records_snapshot_table_arn" {
+  value       = var.enable_analytics ? module.analytics[0].glue_records_snapshot_table_arn : ""
+  description = "The ARN of the records snapshot table (if enabled)."
+}
+
+output "analytics_s3_query_output_arn" {
+  value       = var.enable_analytics ? module.analytics[0].s3_query_output_arn : ""
+  description = "The full ARN to the location of the Athena query outputs (if enabled)."
+}
+
+output "analytics_s3_query_output_path" {
+  value       = var.enable_analytics ? module.analytics[0].s3_query_output_path : ""
+  description = "The path within the analytics bucket where the query results are stored (if enabled)."
+}
+
+output "analytics_glue_catalog_arn" {
+  value       = var.enable_analytics ? module.analytics[0].glue_catalog_arn : ""
+  description = "The ARN of the analytics glue catalog (if enabled)."
+}
+
+output "analytics_glue_database_name" {
+  value       = var.enable_analytics ? module.analytics[0].glue_database_name : ""
+  description = "The name of the glue database (if enabled)."
+}
+
+output "analytics_glue_database_arn" {
+  value       = var.enable_analytics ? module.analytics[0].glue_database_arn : ""
+  description = "The ARN of the analytics glue database (if enabled)."
+}
+
+output "analytics_athena_workgroup_name" {
+  value       = var.enable_analytics ? module.analytics[0].athena_workgroup_name : ""
+  description = "The name of the athena workgroup (if enabled)."
+}
+
+output "analytics_athena_workgroup_arn" {
+  value       = var.enable_analytics ? module.analytics[0].athena_workgroup_arn : ""
+  description = "The ARN of the athena workgroup (if enabled)."
 }

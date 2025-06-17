@@ -15,10 +15,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "entity" {
   rule {
     id     = "cleanup"
     status = "Enabled"
+    filter {}
     expiration {
       expired_object_delete_marker = true
     }
-    dynamic noncurrent_version_expiration {
+    dynamic "noncurrent_version_expiration" {
       for_each = coalesce(var.prepare_for_aws_backup, false) ? [1] : []
       content {
         noncurrent_days = 1
@@ -48,7 +49,7 @@ resource "aws_s3_bucket_public_access_block" "entity" {
 }
 
 resource "aws_s3_bucket_versioning" "entity" {
-  count  = coalesce(var.prepare_for_aws_backup, false) ? 1 : 0
+  count = coalesce(var.prepare_for_aws_backup, false) ? 1 : 0
 
   bucket = aws_s3_bucket.entity.id
   versioning_configuration {
@@ -71,6 +72,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "execution_plan" {
   rule {
     id     = "cleanup"
     status = "Enabled"
+    filter {}
     expiration {
       expired_object_delete_marker = true
     }
