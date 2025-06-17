@@ -160,13 +160,13 @@ variable "create_dashboard" {
 variable "enable_analytics" {
   description = "Defines whether to create the resources required for improved analytic queries"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "snapshot_query_mode" {
   description = "Query mode for snapshot creation: WAIT (ensures successful query execution) or FIRE_AND_FORGET (ensures that the query was started but will not wait for it to finish). Ignored if enable_analytics is false."
   type        = string
-  default     = "WAIT"
+  default     = "FIRE_AND_FORGET"
 }
 
 variable "prepare_for_aws_backup" {
