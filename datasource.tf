@@ -9,6 +9,8 @@ locals {
 
 data "aws_region" "current" {}
 
+data "aws_caller_identity" "current" {}
+
 data "aws_s3_object" "dispatcher_plugin_artifact" {
   bucket = local.artifacts_bucket
   key    = local.dispatcher_plugin_artifact_key

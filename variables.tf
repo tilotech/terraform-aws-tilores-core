@@ -157,6 +157,18 @@ variable "create_dashboard" {
   default     = true
 }
 
+variable "enable_analytics" {
+  description = "Defines whether to create the resources required for improved analytic queries"
+  type        = bool
+  default     = true
+}
+
+variable "snapshot_query_mode" {
+  description = "Query mode for snapshot creation: WAIT (ensures successful query execution) or FIRE_AND_FORGET (ensures that the query was started but will not wait for it to finish). Ignored if enable_analytics is false."
+  type        = string
+  default     = "WAIT"
+}
+
 variable "prepare_for_aws_backup" {
   description = "Prepares resources to be backed up by AWS Backup if it is setup. Enables S3 versioning and DynamoDB point in time recovery"
   type        = bool
@@ -205,6 +217,7 @@ locals {
     ENTITY_STREAM_PROVIDER      = local.create_entity_stream_sqs ? "SQS" : ""
     KINESIS_RAW_DATA_STREAM     = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
     RAW_DATA_SQS                = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
+    SNAPSHOT_REPO_PROVIDER      = var.enable_analytics ? "ATHENA" : "NONE"
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
   }
