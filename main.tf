@@ -146,19 +146,39 @@ module "lambda_api" {
   environment_variables = merge(local.core_envs, {
     DISPATCHER_PLUGIN_PATH                = "/opt/plugin-dispatcher"
     CORE_LAMBDA_REMOVE_CONNECTION_BAN_ARN = module.lambda_remove_connection_ban.lambda_function_arn
+    RAW_DATA_SQS                          = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
+    RAW_DATA_SQS_URL                      = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].url
   })
 
   attach_policy = true
   policy        = aws_iam_policy.lambda_core.arn
 
   attach_policy_statements = true
-  policy_statements = {
+  policy_statements = var.assemble_parallelization_sqs == 0 ? {
     lambda = {
       effect  = "Allow",
       actions = ["lambda:InvokeFunction"]
       resources = [
         module.lambda_remove_connection_ban.lambda_function_arn
       ]
+    }
+  } : {
+    lambda = {
+      effect  = "Allow",
+      actions = ["lambda:InvokeFunction"]
+      resources = [
+        module.lambda_remove_connection_ban.lambda_function_arn
+      ]
+    }
+    cloudwatch = var.assemble_parallelization_sqs == 0 ? null : {
+      effect = "Allow",
+      actions = ["cloudwatch:GetMetricStatistics"],
+      resources = ["*"]
+    }
+    sqs = var.assemble_parallelization_sqs == 0 ? null : {
+      effect = "Allow",
+      actions = ["sqs:GetQueueAttributes"]
+      resources = [aws_sqs_queue.rawdata[0].arn]
     }
   }
 
