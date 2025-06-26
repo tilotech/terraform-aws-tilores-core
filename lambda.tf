@@ -110,8 +110,13 @@ module "lambda_scavenger" {
   }
 
   environment_variables = {
-    DEAD_LETTER_QUEUE_URL = aws_sqs_queue.scavenger_dead_letter_queue.id
-    S3_ANALYTICS_BUCKET   = var.enable_analytics ? module.analytics[0].bucket_name : ""
+    DEAD_LETTER_QUEUE_URL     = aws_sqs_queue.scavenger_dead_letter_queue.id
+    S3_ENTITIES_BUCKET        = aws_s3_bucket.entity.bucket
+    S3_ANALYTICS_BUCKET       = var.enable_analytics ? module.analytics[0].bucket_name : ""
+    S3_DELETE_DELAY           = var.enable_analytics ? "60" : ""
+    S3_DELETE_DELAY_BUCKET    = var.enable_analytics ? aws_s3_bucket.execution_plan.bucket : ""
+    S3_DELETE_DELAY_PREFIX    = var.enable_analytics ? "scavenger" : ""
+    S3_DELETE_DELAY_META_FILE = var.enable_analytics ? "scavenger/meta.json" : ""
   }
 
   allowed_triggers = {
@@ -164,6 +169,18 @@ module "lambda_scavenger" {
           "${module.analytics[0].s3_entities_snapshot_arn}/*",
           "${module.analytics[0].s3_records_snapshot_arn}/*"
         ]
+      },
+      s3Scavenger = {
+        effect = "Allow"
+        actions = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ]
+        resources = [
+          aws_s3_bucket.execution_plan.arn,
+          format("%s/*", aws_s3_bucket.execution_plan.arn)
+        ]
       }
     } : {}
   )
@@ -183,6 +200,69 @@ resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scaveng
   filter_pattern  = "\"REMOVE-GARBAGE\""
   log_group_name  = module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_name
   name            = format("%s-%s", local.prefix, "remove-connection-ban-scavenger")
+}
+
+resource "aws_scheduler_schedule" "scavenger" {
+  count = var.enable_analytics ? 1 : 0
+
+  name = format("%s-scavenger", local.prefix)
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+  schedule_expression = "rate(5 minutes)"
+
+  target {
+    arn      = module.lambda_scavenger.lambda_function_arn
+    role_arn = aws_iam_role.scavenger_schedule[0].arn
+    input    = "{\"scheduled\":true}"
+
+    retry_policy {
+      maximum_retry_attempts = 0
+    }
+  }
+}
+
+resource "aws_iam_role" "scavenger_schedule" {
+  count = var.enable_analytics ? 1 : 0
+  name  = format("%s-scavenger-schedule", local.prefix)
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "scheduler.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+        Condition : {
+          StringEquals : {
+            "aws:SourceAccount" : data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "scavenger_schedule" {
+  count  = var.enable_analytics ? 1 : 0
+  name   = format("%s-scavenger-schedule", local.prefix)
+  role   = aws_iam_role.scavenger_schedule[0].id
+  policy = data.aws_iam_policy_document.scavenger_schedule[0].json
+}
+
+data "aws_iam_policy_document" "scavenger_schedule" {
+  count = var.enable_analytics ? 1 : 0
+  statement {
+    effect = "Allow"
+    actions = [
+      "lambda:InvokeFunction"
+    ]
+    resources = [
+      module.lambda_scavenger.lambda_function_arn
+    ]
+  }
 }
 
 module "lambda_send_usage_data" {
