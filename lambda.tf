@@ -112,7 +112,7 @@ module "lambda_assemble_serial" {
   ]
 
   environment_variables          = local.core_envs
-  reserved_concurrent_executions = 1 // must limit to one execution to ensure serial processing
+  reserved_concurrent_executions = var.rawdata_serial_stream_shard_count == 0 ? 2 : 1 // limit to 1 entry for kinesis and 2 for sqs -> sqs max concurrency setting in the trigger cannot go below 2 and must be equal or higher than lambda reserved concurrency
 
   attach_policies = true
   policies = [
