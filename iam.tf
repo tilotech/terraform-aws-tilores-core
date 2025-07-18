@@ -6,7 +6,9 @@ locals {
       aws_dynamodb_table.rule_index.arn,
       aws_dynamodb_table.rule_reverse_index.arn,
       var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].arn,
+      !var.enable_serial_assembly || var.rawdata_serial_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_serial_stream[0].arn,
       var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].arn,
+      !var.enable_serial_assembly || var.rawdata_serial_stream_shard_count != 0 ? "" : aws_sqs_queue.rawdata_serial[0].arn,
       local.create_entity_stream_kinesis ? aws_kinesis_stream.kinesis_entity_stream[0].arn : "",
       local.create_entity_stream_sqs ? aws_sqs_queue.entity_stream[0].arn : "",
       aws_sqs_queue.dead_letter_queue.arn,
@@ -21,7 +23,7 @@ resource "aws_iam_policy" "lambda_core" {
 
 data "aws_iam_policy_document" "lambda_core" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "s3:GetObject",
       "s3:PutObject",
@@ -37,7 +39,7 @@ data "aws_iam_policy_document" "lambda_core" {
     ]
   }
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "dynamodb:GetItem",
       "dynamodb:BatchGetItem",
@@ -57,7 +59,7 @@ data "aws_iam_policy_document" "lambda_core" {
     resources = local.resources_granted_to_lambda
   }
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "kinesis:ListStreams",
       "cloudwatch:PutMetricData"
@@ -65,7 +67,7 @@ data "aws_iam_policy_document" "lambda_core" {
     resources = ["*"]
   }
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents"
@@ -81,7 +83,7 @@ resource "aws_iam_policy" "lambda_send_usage_data" {
 
 data "aws_iam_policy_document" "lambda_send_usage_data" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "cloudwatch:GetMetricData",
       "cloudwatch:PutMetricData"
@@ -89,7 +91,7 @@ data "aws_iam_policy_document" "lambda_send_usage_data" {
     resources = ["*"]
   }
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "dynamodb:DescribeTable"
     ]

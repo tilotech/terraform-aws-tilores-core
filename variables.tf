@@ -88,7 +88,7 @@ variable "entity_event_stream_shard_count" {
 }
 
 variable "rawdata_stream_shard_count" {
-  description = "The amount of Kinesis shards used for the rawdata assembly stream, in case you expect a high amount of data ingestion (mutation submit) then increase this number; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
+  description = "The amount of Kinesis shards used for the rawdata assembly stream, in case you expect a high amount of data ingestion (mutation submit) then increase this number; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in separate steps"
   type        = number
   default     = 0
 }
@@ -175,6 +175,42 @@ variable "prepare_for_aws_backup" {
   default     = null
 }
 
+variable "enable_serial_assembly" {
+  description = "Defines whether to enable automatic serial processing for highly locked entities; highly recommended for most large volume deployments; serial processing requires a valid sqs (default) or kinesis stream"
+  type        = bool
+  default     = false
+}
+
+variable "rawdata_serial_stream_shard_count" {
+  description = "The amount of Kinesis shards used for the rawdata assembly stream during serial processing, in case you expect a high amount of data ingestion (mutation submit) then increase this number; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in separate steps"
+  type        = number
+  default     = 0
+}
+
+variable "locked_entities_cache_size" {
+  description = "The cache size for detecting entities that require serial processing; higher values increase the likeliness of identifying frequently locked entities"
+  type        = number
+  default     = 200
+}
+
+variable "locked_entities_cache_max_age" {
+  description = "The maximum age of cache entries for detecting entities that require serial processing; e.g. 10m or 2h; longer periods increase the likeliness of identifying frequently locked entities and decrease chance of early cache eviction"
+  type        = string
+  default     = "30m"
+}
+
+variable "locked_entities_cache_threshold" {
+  description = "The count threshold for detecting entities that require serial processing; defines the minimal required count an entity must have been locked (in the same lambda function) before being migrated into serial processing"
+  type        = number
+  default     = 10
+}
+
+variable "enable_file_compression" {
+  description = "Enables gzip compression for entity files"
+  type        = bool
+  default     = false
+}
+
 variable "tags_dynamodb" {
   description = "A map of tags to assign to DynamoDB tables."
   type        = map(string)
@@ -220,5 +256,6 @@ locals {
     SNAPSHOT_REPO_PROVIDER      = var.enable_analytics ? "ATHENA" : "NONE"
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
+    ENTITY_FILE_COMPRESSION     = var.enable_file_compression ? "gzip" : ""
   }
 }

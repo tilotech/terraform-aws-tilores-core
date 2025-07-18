@@ -18,6 +18,26 @@ locals {
     for source, config in local.all_assemble_event_source_mapping :
     source => config if config != null
   }
+
+  all_assemble_serial_event_source_mapping = {
+    sqs = !var.enable_serial_assembly || var.rawdata_serial_stream_shard_count != 0 ? null : {
+      event_source_arn = aws_sqs_queue.rawdata_serial[0].arn
+      batch_size       = 1
+      scaling_config = {
+        maximum_concurrency = 2
+      }
+    }
+    kinesis = !var.enable_serial_assembly || var.rawdata_serial_stream_shard_count == 0 ? null : {
+      event_source_arn       = aws_kinesis_stream.kinesis_rawdata_serial_stream[0].arn
+      starting_position      = "TRIM_HORIZON"
+      batch_size             = 1
+      parallelization_factor = 1
+    }
+  }
+  assemble_serial_event_source_mapping = {
+    for source, config in local.all_assemble_serial_event_source_mapping :
+    source => config if config != null
+  }
 }
 
 module "lambda_assemble" {
@@ -43,7 +63,17 @@ module "lambda_assemble" {
     module.lambda_layer_rule_config.lambda_layer_arn,
   ]
 
-  environment_variables = local.core_envs
+  environment_variables = merge(
+    local.core_envs,
+    var.enable_serial_assembly ? {
+      SERIAL_RAW_DATA_STREAM_PROVIDER = var.entity_event_stream_shard_count == 0 ? "SQS" : "KINESIS"
+      KINESIS_SERIAL_RAW_DATA_STREAM  = var.entity_event_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_serial_stream[0].name
+      SERIAL_RAW_DATA_SQS             = var.entity_event_stream_shard_count == 0 ? aws_sqs_queue.rawdata_serial[0].name : ""
+      LOCKED_ENTITIES_CACHE_SIZE      = var.locked_entities_cache_size
+      LOCKED_ENTITIES_CACHE_MAX_AGE   = var.locked_entities_cache_max_age
+      LOCKED_ENTITIES_CACHE_THRESHOLD = var.locked_entities_cache_threshold
+    } : {}
+  )
 
   attach_policies = true
   policies = [
@@ -52,6 +82,45 @@ module "lambda_assemble" {
   number_of_policies = 1
 
   event_source_mapping = local.assemble_event_source_mapping
+
+  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+}
+
+module "lambda_assemble_serial" {
+  count = var.enable_serial_assembly ? 1 : 0
+
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "7.2.1"
+
+  function_name = format("%s-assemble-serial", local.prefix)
+  handler       = "assemble"
+  runtime       = "provided.al2"
+  timeout       = 900
+  memory_size   = 1024
+  architectures = ["arm64"]
+
+  create_package = false
+
+  s3_existing_package = {
+    bucket     = data.aws_s3_object.assemble_artifact.bucket
+    key        = data.aws_s3_object.assemble_artifact.key
+    version_id = data.aws_s3_object.assemble_artifact.version_id
+  }
+
+  layers = [
+    module.lambda_layer_rule_config.lambda_layer_arn,
+  ]
+
+  environment_variables          = local.core_envs
+  reserved_concurrent_executions = 1 // must limit to one execution to ensure serial processing
+
+  attach_policies = true
+  policies = [
+    aws_iam_policy.lambda_core.arn
+  ]
+  number_of_policies = 1
+
+  event_source_mapping = local.assemble_serial_event_source_mapping
 
   cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }
@@ -119,16 +188,24 @@ module "lambda_scavenger" {
     S3_DELETE_DELAY_META_FILE = var.enable_analytics ? "scavenger/meta.json" : ""
   }
 
-  allowed_triggers = {
-    assemble = {
-      principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
-      source_arn = format("%s:*", module.lambda_assemble.lambda_cloudwatch_log_group_arn)
-    }
-    remove_connection_ban = {
-      principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
-      source_arn = format("%s:*", module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_arn)
-    }
-  }
+  allowed_triggers = merge(
+    {
+      assemble = {
+        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
+        source_arn = format("%s:*", module.lambda_assemble.lambda_cloudwatch_log_group_arn)
+      }
+      remove_connection_ban = {
+        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
+        source_arn = format("%s:*", module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_arn)
+      }
+    },
+    var.enable_serial_assembly ? {
+      assemble_serial = {
+        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
+        source_arn = format("%s:*", module.lambda_assemble_serial[0].lambda_cloudwatch_log_group_arn)
+      }
+    } : {}
+  )
 
   create_current_version_allowed_triggers = false
 
@@ -193,6 +270,14 @@ resource "aws_cloudwatch_log_subscription_filter" "assemble_scavenger" {
   filter_pattern  = "\"REMOVE-GARBAGE\""
   log_group_name  = module.lambda_assemble.lambda_cloudwatch_log_group_name
   name            = format("%s-%s", local.prefix, "assemble-scavenger")
+}
+
+resource "aws_cloudwatch_log_subscription_filter" "assemble_serial_scavenger" {
+  count           = var.enable_serial_assembly ? 1 : 0
+  destination_arn = module.lambda_scavenger.lambda_function_arn
+  filter_pattern  = "\"REMOVE-GARBAGE\""
+  log_group_name  = module.lambda_assemble_serial[0].lambda_cloudwatch_log_group_name
+  name            = format("%s-%s", local.prefix, "assemble-serial-scavenger")
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scavenger" {
