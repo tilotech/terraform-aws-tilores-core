@@ -120,7 +120,6 @@ module "lambda_api" {
   version = "7.2.1"
 
   function_name = format("%s-api", local.prefix)
-  description   = "TiloRes API"
   handler       = "api"
   runtime       = "provided.al2"
   timeout       = 30
@@ -162,7 +161,7 @@ module "lambda_api" {
         module.lambda_remove_connection_ban.lambda_function_arn
       ]
     }
-  } : {
+    } : {
     lambda = {
       effect  = "Allow",
       actions = ["lambda:InvokeFunction"]
@@ -171,13 +170,13 @@ module "lambda_api" {
       ]
     }
     cloudwatch = var.assemble_parallelization_sqs == 0 ? null : {
-      effect = "Allow",
-      actions = ["cloudwatch:GetMetricStatistics"],
+      effect    = "Allow",
+      actions   = ["cloudwatch:GetMetricStatistics"],
       resources = ["*"]
     }
     sqs = var.assemble_parallelization_sqs == 0 ? null : {
-      effect = "Allow",
-      actions = ["sqs:GetQueueAttributes"]
+      effect    = "Allow",
+      actions   = ["sqs:GetQueueAttributes"]
       resources = [aws_sqs_queue.rawdata[0].arn]
     }
   }
