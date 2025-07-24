@@ -1,8 +1,9 @@
 locals {
   all_assemble_event_source_mapping = {
     sqs = var.assemble_parallelization_sqs == 0 ? null : {
-      event_source_arn = aws_sqs_queue.rawdata[0].arn
-      batch_size       = 1
+      event_source_arn        = aws_sqs_queue.rawdata[0].arn
+      batch_size              = 1
+      function_response_types = ["ReportBatchItemFailures"]
       scaling_config = {
         maximum_concurrency = var.assemble_parallelization_sqs
       }
@@ -21,8 +22,9 @@ locals {
 
   all_assemble_serial_event_source_mapping = {
     sqs = !var.enable_serial_assembly || var.rawdata_serial_stream_shard_count != 0 ? null : {
-      event_source_arn = aws_sqs_queue.rawdata_serial[0].arn
-      batch_size       = 1
+      event_source_arn        = aws_sqs_queue.rawdata_serial[0].arn
+      batch_size              = 1
+      function_response_types = ["ReportBatchItemFailures"]
       scaling_config = {
         maximum_concurrency = 2
       }

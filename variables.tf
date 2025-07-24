@@ -257,5 +257,6 @@ locals {
     DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
     ENTITY_FILE_COMPRESSION     = var.enable_file_compression ? "gzip" : ""
+    PARTIAL_BATCH_RESPONSE      = var.assemble_parallelization_sqs == 0 ? "FALSE" : "TRUE"
   }
 }
