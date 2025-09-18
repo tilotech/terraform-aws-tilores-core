@@ -81,6 +81,12 @@ variable "create_entity_stream" {
   default     = false
 }
 
+variable "entity_stream_offload_expiry_days" {
+  description = "The number of days before offloaded entity stream messages will expire. Currently only applies to SQS-based entity streams."
+  type        = number
+  default     = 1
+}
+
 variable "entity_event_stream_shard_count" {
   description = "The amount of Kinesis shards used for entity event stream; can at maximum be set to twice or half the current value; if needed increasing or decreasing can be applied multiple times in seperate steps"
   type        = number
@@ -240,23 +246,24 @@ locals {
   create_entity_stream_kinesis = var.create_entity_stream && var.entity_event_stream_shard_count != 0
 
   core_envs = {
-    RULE_CONFIG                 = local.rule_config_json_path
-    DYNAMODB_RULE_INDEX         = aws_dynamodb_table.rule_index.name
-    DYNAMODB_RULE_REVERSE_INDEX = aws_dynamodb_table.rule_reverse_index.name
-    DYNAMODB_ENTITIES           = aws_dynamodb_table.entities.name
-    DYNAMODB_RECORDS            = aws_dynamodb_table.records.name
-    DYNAMODB_CONSISTENT_READ    = "TRUE"
-    S3_ENTITY_BUCKET            = aws_s3_bucket.entity.bucket
-    S3_EXECUTION_PLAN_BUCKET    = aws_s3_bucket.execution_plan.bucket
-    KINESIS_ENTITY_STREAM       = local.create_entity_stream_kinesis ? aws_kinesis_stream.kinesis_entity_stream[0].name : ""
-    SQS_ENTITY_STREAM           = local.create_entity_stream_sqs ? aws_sqs_queue.entity_stream[0].name : ""
-    ENTITY_STREAM_PROVIDER      = local.create_entity_stream_sqs ? "SQS" : ""
-    KINESIS_RAW_DATA_STREAM     = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
-    RAW_DATA_SQS                = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
-    SNAPSHOT_REPO_PROVIDER      = var.enable_analytics ? "ATHENA" : "NONE"
-    DEAD_LETTER_QUEUE           = aws_sqs_queue.dead_letter_queue.name
-    UPDATE_RECORDS              = var.update_records ? "TRUE" : "FALSE"
-    ENTITY_FILE_COMPRESSION     = var.enable_file_compression ? "gzip" : ""
-    PARTIAL_BATCH_RESPONSE      = var.assemble_parallelization_sqs == 0 ? "FALSE" : "TRUE"
+    RULE_CONFIG                       = local.rule_config_json_path
+    DYNAMODB_RULE_INDEX               = aws_dynamodb_table.rule_index.name
+    DYNAMODB_RULE_REVERSE_INDEX       = aws_dynamodb_table.rule_reverse_index.name
+    DYNAMODB_ENTITIES                 = aws_dynamodb_table.entities.name
+    DYNAMODB_RECORDS                  = aws_dynamodb_table.records.name
+    DYNAMODB_CONSISTENT_READ          = "TRUE"
+    S3_ENTITY_BUCKET                  = aws_s3_bucket.entity.bucket
+    S3_EXECUTION_PLAN_BUCKET          = aws_s3_bucket.execution_plan.bucket
+    KINESIS_ENTITY_STREAM             = local.create_entity_stream_kinesis ? aws_kinesis_stream.kinesis_entity_stream[0].name : ""
+    SQS_ENTITY_STREAM                 = local.create_entity_stream_sqs ? aws_sqs_queue.entity_stream[0].name : ""
+    ENTITY_STREAM_PROVIDER            = local.create_entity_stream_sqs ? "SQS" : ""
+    KINESIS_RAW_DATA_STREAM           = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
+    RAW_DATA_SQS                      = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
+    SNAPSHOT_REPO_PROVIDER            = var.enable_analytics ? "ATHENA" : "NONE"
+    DEAD_LETTER_QUEUE                 = aws_sqs_queue.dead_letter_queue.name
+    UPDATE_RECORDS                    = var.update_records ? "TRUE" : "FALSE"
+    ENTITY_FILE_COMPRESSION           = var.enable_file_compression ? "gzip" : ""
+    PARTIAL_BATCH_RESPONSE            = var.assemble_parallelization_sqs == 0 ? "FALSE" : "TRUE"
+    ENTITY_STREAM_OFFLOAD_EXPIRY_DAYS = var.entity_stream_offload_expiry_days
   }
 }
