@@ -77,6 +77,20 @@ resource "aws_s3_bucket_lifecycle_configuration" "execution_plan" {
       expired_object_delete_marker = true
     }
   }
+
+  rule {
+    id     = "sqseventexpiry"
+    status = "Enabled"
+    filter {
+      prefix = "sqs-events/"
+    }
+    expiration {
+      days = var.entity_stream_offload_expiry_days
+    }
+    noncurrent_version_expiration {
+      noncurrent_days = var.entity_stream_offload_expiry_days
+    }
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "execution_plan" {
