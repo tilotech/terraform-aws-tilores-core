@@ -84,7 +84,7 @@ variable "create_entity_stream" {
 variable "entity_stream_offload_expiry_days" {
   description = "The number of days before offloaded entity stream messages will expire. Currently only applies to SQS-based entity streams."
   type        = number
-  default     = 1
+  default     = 4
 }
 
 variable "entity_event_stream_shard_count" {
