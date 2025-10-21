@@ -379,7 +379,21 @@ module "lambda_aggregate_analytics" {
   ]
   number_of_policies = 1
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+
+  depends_on = [aws_cloudwatch_log_group.lambda_aggregate_analytics]
+}
+
+# Moved block to migrate log group from Lambda module to explicit resource
+moved {
+  from = module.lambda_aggregate_analytics.aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_aggregate_analytics
+}
+
+resource "aws_cloudwatch_log_group" "lambda_aggregate_analytics" {
+  name              = "/aws/lambda/${var.prefix}-aggregate-analytics"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 resource "aws_iam_policy" "aggregate_analytics" {

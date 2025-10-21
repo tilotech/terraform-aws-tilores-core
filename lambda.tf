@@ -85,7 +85,10 @@ module "lambda_assemble" {
 
   event_source_mapping = local.assemble_event_source_mapping
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+
+  depends_on = [aws_cloudwatch_log_group.lambda_assemble]
 }
 
 module "lambda_assemble_serial" {
@@ -124,7 +127,11 @@ module "lambda_assemble_serial" {
 
   event_source_mapping = local.assemble_serial_event_source_mapping
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+  cloudwatch_logs_retention_in_days  = var.cloudwatch_logs_retention_in_days
+
+  depends_on = [aws_cloudwatch_log_group.lambda_assemble_serial]
 }
 
 module "lambda_remove_connection_ban" {
@@ -158,7 +165,10 @@ module "lambda_remove_connection_ban" {
   ]
   number_of_policies = 1
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+
+  depends_on = [aws_cloudwatch_log_group.lambda_remove_connection_ban]
 }
 
 module "lambda_scavenger" {
@@ -194,17 +204,17 @@ module "lambda_scavenger" {
     {
       assemble = {
         principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
-        source_arn = format("%s:*", module.lambda_assemble.lambda_cloudwatch_log_group_arn)
+        source_arn = format("%s:*", aws_cloudwatch_log_group.lambda_assemble.arn)
       }
       remove_connection_ban = {
         principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
-        source_arn = format("%s:*", module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_arn)
+        source_arn = format("%s:*", aws_cloudwatch_log_group.lambda_remove_connection_ban.arn)
       }
     },
     var.enable_serial_assembly ? {
       assemble_serial = {
         principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
-        source_arn = format("%s:*", module.lambda_assemble_serial[0].lambda_cloudwatch_log_group_arn)
+        source_arn = format("%s:*", aws_cloudwatch_log_group.lambda_assemble_serial[0].arn)
       }
     } : {}
   )
@@ -264,13 +274,16 @@ module "lambda_scavenger" {
     } : {}
   )
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+
+  depends_on = [aws_cloudwatch_log_group.lambda_scavenger]
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "assemble_scavenger" {
   destination_arn = module.lambda_scavenger.lambda_function_arn
   filter_pattern  = "\"REMOVE-GARBAGE\""
-  log_group_name  = module.lambda_assemble.lambda_cloudwatch_log_group_name
+  log_group_name  = aws_cloudwatch_log_group.lambda_assemble.name
   name            = format("%s-%s", local.prefix, "assemble-scavenger")
 }
 
@@ -278,14 +291,14 @@ resource "aws_cloudwatch_log_subscription_filter" "assemble_serial_scavenger" {
   count           = var.enable_serial_assembly ? 1 : 0
   destination_arn = module.lambda_scavenger.lambda_function_arn
   filter_pattern  = "\"REMOVE-GARBAGE\""
-  log_group_name  = module.lambda_assemble_serial[0].lambda_cloudwatch_log_group_name
+  log_group_name  = aws_cloudwatch_log_group.lambda_assemble_serial[0].name
   name            = format("%s-%s", local.prefix, "assemble-serial-scavenger")
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "remove_connection_ban_scavenger" {
   destination_arn = module.lambda_scavenger.lambda_function_arn
   filter_pattern  = "\"REMOVE-GARBAGE\""
-  log_group_name  = module.lambda_remove_connection_ban.lambda_cloudwatch_log_group_name
+  log_group_name  = aws_cloudwatch_log_group.lambda_remove_connection_ban.name
   name            = format("%s-%s", local.prefix, "remove-connection-ban-scavenger")
 }
 
@@ -397,7 +410,10 @@ module "lambda_send_usage_data" {
   ]
   number_of_policies = 1
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+
+  depends_on = [aws_cloudwatch_log_group.lambda_send_usage_data]
 }
 
 resource "aws_lambda_function_event_invoke_config" "send_usage_data" {
