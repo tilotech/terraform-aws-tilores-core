@@ -181,7 +181,10 @@ module "lambda_api" {
     }
   }
 
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
+  use_existing_cloudwatch_log_group  = true
+  attach_create_log_group_permission = false
+
+  depends_on = [aws_cloudwatch_log_group.lambda_api]
 }
 
 module "lambda_layer_dispatcher_plugin" {

@@ -5,9 +5,74 @@ locals {
       pattern        = "[date, time, level=METRIC, metric_name=GraphQLErrors, metric_value]"
       value          = "$metric_value"
       namespace      = local.prefix
-      log_group_name = module.lambda_api.lambda_cloudwatch_log_group_name
+      log_group_name = aws_cloudwatch_log_group.lambda_api.name
     }
   ]
+}
+
+// Moved blocks to migrate log groups from Lambda modules to explicit resources
+// These prevent destruction/recreation of existing log groups during migration
+
+moved {
+  from = module.lambda_api.aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_api
+}
+
+moved {
+  from = module.lambda_assemble.aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_assemble
+}
+
+moved {
+  from = module.lambda_assemble_serial[0].aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_assemble_serial[0]
+}
+
+moved {
+  from = module.lambda_remove_connection_ban.aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_remove_connection_ban
+}
+
+moved {
+  from = module.lambda_scavenger.aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_scavenger
+}
+
+moved {
+  from = module.lambda_send_usage_data.aws_cloudwatch_log_group.lambda[0]
+  to   = aws_cloudwatch_log_group.lambda_send_usage_data
+}
+
+resource "aws_cloudwatch_log_group" "lambda_api" {
+  name              = "/aws/lambda/${local.prefix}-api"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
+}
+
+resource "aws_cloudwatch_log_group" "lambda_assemble" {
+  name              = "/aws/lambda/${local.prefix}-assemble"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
+}
+
+resource "aws_cloudwatch_log_group" "lambda_assemble_serial" {
+  count = var.enable_serial_assembly ? 1 : 0
+
+  name              = "/aws/lambda/${local.prefix}-assemble-serial"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
+}
+
+resource "aws_cloudwatch_log_group" "lambda_remove_connection_ban" {
+  name              = "/aws/lambda/${local.prefix}-remove-connection-ban"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
+}
+
+resource "aws_cloudwatch_log_group" "lambda_scavenger" {
+  name              = "/aws/lambda/${local.prefix}-scavenger"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
+}
+
+resource "aws_cloudwatch_log_group" "lambda_send_usage_data" {
+  name              = "/aws/lambda/${local.prefix}-send-usage-data"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
 }
 
 resource "aws_cloudwatch_log_metric_filter" "metric_filters" {
