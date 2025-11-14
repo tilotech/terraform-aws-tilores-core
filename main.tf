@@ -79,7 +79,7 @@ module "authorizer" {
 
   function_name = format("%s-authorizer", local.prefix)
   handler       = "authorizer"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 30
   memory_size   = 1024
   architectures = ["arm64"]
@@ -121,7 +121,7 @@ module "lambda_api" {
 
   function_name = format("%s-api", local.prefix)
   handler       = "api"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 30
   memory_size   = 1024
   architectures = ["arm64"]
@@ -195,7 +195,7 @@ module "lambda_layer_dispatcher_plugin" {
 
   layer_name               = format("%s-dispatcher-plugin", local.prefix)
   description              = "TiloRes API Dispatcher Plugin"
-  compatible_runtimes      = ["provided.al2"]
+  compatible_runtimes      = ["provided.al2023"]
   compatible_architectures = ["arm64"]
 
   create_package = false
@@ -216,7 +216,7 @@ module "lambda_layer_rule_config" {
 
   layer_name               = format("%s-rule-config", local.prefix)
   description              = "Rule config json file"
-  compatible_runtimes      = ["provided.al2"]
+  compatible_runtimes      = ["provided.al2023"]
   compatible_architectures = ["arm64"]
 
   create_package         = false
