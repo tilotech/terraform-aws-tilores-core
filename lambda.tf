@@ -48,7 +48,7 @@ module "lambda_assemble" {
 
   function_name = format("%s-assemble", local.prefix)
   handler       = "assemble"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 900
   memory_size   = 1024
   architectures = ["arm64"]
@@ -99,7 +99,7 @@ module "lambda_assemble_serial" {
 
   function_name = format("%s-assemble-serial", local.prefix)
   handler       = "assemble"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 900
   memory_size   = 1024
   architectures = ["arm64"]
@@ -140,7 +140,7 @@ module "lambda_remove_connection_ban" {
 
   function_name = format("%s-remove-connection-ban", local.prefix)
   handler       = "removeconnectionban"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 900
   memory_size   = 1024
   architectures = ["arm64"]
@@ -177,7 +177,7 @@ module "lambda_scavenger" {
 
   function_name = format("%s-scavenger", local.prefix)
   handler       = "scavenger"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 900
   memory_size   = 1024
   architectures = ["arm64"]
@@ -371,7 +371,7 @@ module "lambda_send_usage_data" {
 
   function_name = format("%s-send-usage-data", local.prefix)
   handler       = "send"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 900
   memory_size   = 1024
   architectures = ["arm64"]

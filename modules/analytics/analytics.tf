@@ -348,7 +348,7 @@ module "lambda_aggregate_analytics" {
 
   function_name = format("%s-aggregate-analytics", var.prefix)
   handler       = "aggregate-analytics"
-  runtime       = "provided.al2"
+  runtime       = "provided.al2023"
   timeout       = 900
   memory_size   = 128
   architectures = ["arm64"]
