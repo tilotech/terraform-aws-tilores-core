@@ -139,6 +139,12 @@ variable "core_version" {
   default     = "v0"
 }
 
+variable "etm_ref_lists_version" {
+  description = "The version of ETM pre-defined reference lists, e.g. v0-1-0 , v0 or latest"
+  type        = string
+  default     = "v0"
+}
+
 variable "scavenger_version" {
   description = "The version of scavenger, e.g. v0-1-0 , v0 or latest"
   type        = string

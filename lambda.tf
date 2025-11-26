@@ -63,6 +63,7 @@ module "lambda_assemble" {
 
   layers = [
     module.lambda_layer_rule_config.lambda_layer_arn,
+    module.lambda_layer_etm_ref_lists.lambda_layer_arn,
   ]
 
   environment_variables = merge(
@@ -114,6 +115,7 @@ module "lambda_assemble_serial" {
 
   layers = [
     module.lambda_layer_rule_config.lambda_layer_arn,
+    module.lambda_layer_etm_ref_lists.lambda_layer_arn,
   ]
 
   environment_variables          = local.core_envs
@@ -155,6 +157,7 @@ module "lambda_remove_connection_ban" {
 
   layers = [
     module.lambda_layer_rule_config.lambda_layer_arn,
+    module.lambda_layer_etm_ref_lists.lambda_layer_arn,
   ]
 
   environment_variables = local.core_envs

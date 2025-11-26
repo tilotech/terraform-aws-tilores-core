@@ -28,6 +28,11 @@ output "config_layer_arn" {
   description = "The lambda layer ARN holding the config"
 }
 
+output "etm_ref_lists_layer_arn" {
+  value       = module.lambda_layer_etm_ref_lists.lambda_layer_arn
+  description = "The lambda layer ARN holding etm pre-defined reference lists"
+}
+
 output "entity_bucket_name" {
   value       = aws_s3_bucket.entity.id
   description = "The name of the bucket holding the entities"
