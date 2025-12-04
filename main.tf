@@ -129,11 +129,13 @@ module "lambda_api" {
   create_package         = false
   local_existing_package = var.api_file
 
-  layers = [
-    module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
-    module.lambda_layer_rule_config.lambda_layer_arn,
-    module.lambda_layer_etm_ref_lists.lambda_layer_arn,
-  ]
+  layers = concat(
+    [
+      module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
+      module.lambda_layer_rule_config.lambda_layer_arn,
+    ],
+    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+  )
 
   allowed_triggers = {
     APIGateway = {
@@ -222,27 +224,6 @@ module "lambda_layer_rule_config" {
 
   create_package         = false
   local_existing_package = var.rule_config_file
-
-  cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
-}
-
-module "lambda_layer_etm_ref_lists" {
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "7.2.1"
-
-  create_layer = true
-
-  layer_name               = format("%s-ref-lists", local.prefix)
-  description              = "ETM pre-defined reference lists json files"
-  compatible_runtimes      = ["provided.al2023"]
-  compatible_architectures = ["arm64"]
-
-  create_package = false
-  s3_existing_package = {
-    bucket     = data.aws_s3_object.etm_ref_lists_artifact.bucket
-    key        = data.aws_s3_object.etm_ref_lists_artifact.key
-    version_id = data.aws_s3_object.etm_ref_lists_artifact.version_id
-  }
 
   cloudwatch_logs_retention_in_days = var.cloudwatch_logs_retention_in_days
 }

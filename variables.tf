@@ -139,12 +139,6 @@ variable "core_version" {
   default     = "v0"
 }
 
-variable "etm_ref_lists_version" {
-  description = "The version of ETM pre-defined reference lists, e.g. v0-1-0 , v0 or latest"
-  type        = string
-  default     = "v0"
-}
-
 variable "scavenger_version" {
   description = "The version of scavenger, e.g. v0-1-0 , v0 or latest"
   type        = string
@@ -271,5 +265,7 @@ locals {
     ENTITY_FILE_COMPRESSION           = var.enable_file_compression ? "gzip" : ""
     PARTIAL_BATCH_RESPONSE            = var.assemble_parallelization_sqs == 0 ? "FALSE" : "TRUE"
     ENTITY_STREAM_OFFLOAD_EXPIRY_DAYS = var.entity_stream_offload_expiry_days
+    REFLIST_LOCAL_PATH                = local.has_external_refs ? "/opt" : ""
+    REFLIST_S3_PATH                   = local.has_external_refs ? format("%s/tilotech/tilores-reflists", local.artifacts_bucket) : ""
   }
 }

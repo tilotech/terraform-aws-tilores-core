@@ -29,8 +29,8 @@ output "config_layer_arn" {
 }
 
 output "etm_ref_lists_layer_arn" {
-  value       = module.lambda_layer_etm_ref_lists.lambda_layer_arn
-  description = "The lambda layer ARN holding etm pre-defined reference lists"
+  value       = local.has_external_refs ? module.lambda_layer_etm_ref_lists[0].lambda_layer_arn : null
+  description = "The lambda layer ARN holding etm external reference lists (null if none configured)"
 }
 
 output "entity_bucket_name" {
