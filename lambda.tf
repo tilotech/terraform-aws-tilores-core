@@ -61,9 +61,10 @@ module "lambda_assemble" {
     version_id = data.aws_s3_object.assemble_artifact.version_id
   }
 
-  layers = [
-    module.lambda_layer_rule_config.lambda_layer_arn,
-  ]
+  layers = concat(
+    [module.lambda_layer_rule_config.lambda_layer_arn],
+    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+  )
 
   environment_variables = merge(
     local.core_envs,
@@ -112,9 +113,10 @@ module "lambda_assemble_serial" {
     version_id = data.aws_s3_object.assemble_artifact.version_id
   }
 
-  layers = [
-    module.lambda_layer_rule_config.lambda_layer_arn,
-  ]
+  layers = concat(
+    [module.lambda_layer_rule_config.lambda_layer_arn],
+    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+  )
 
   environment_variables          = local.core_envs
   reserved_concurrent_executions = var.rawdata_serial_stream_shard_count == 0 ? 2 : 1 // limit to 1 entry for kinesis and 2 for sqs -> sqs max concurrency setting in the trigger cannot go below 2 and must be equal or higher than lambda reserved concurrency
@@ -153,9 +155,10 @@ module "lambda_remove_connection_ban" {
     version_id = data.aws_s3_object.remove_connection_ban_artifact.version_id
   }
 
-  layers = [
-    module.lambda_layer_rule_config.lambda_layer_arn,
-  ]
+  layers = concat(
+    [module.lambda_layer_rule_config.lambda_layer_arn],
+    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+  )
 
   environment_variables = local.core_envs
 
