@@ -129,10 +129,13 @@ module "lambda_api" {
   create_package         = false
   local_existing_package = var.api_file
 
-  layers = [
-    module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
-    module.lambda_layer_rule_config.lambda_layer_arn,
-  ]
+  layers = concat(
+    [
+      module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
+      module.lambda_layer_rule_config.lambda_layer_arn,
+    ],
+    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+  )
 
   allowed_triggers = {
     APIGateway = {

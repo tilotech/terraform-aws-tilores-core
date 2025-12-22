@@ -265,5 +265,7 @@ locals {
     ENTITY_FILE_COMPRESSION           = var.enable_file_compression ? "gzip" : ""
     PARTIAL_BATCH_RESPONSE            = var.assemble_parallelization_sqs == 0 ? "FALSE" : "TRUE"
     ENTITY_STREAM_OFFLOAD_EXPIRY_DAYS = var.entity_stream_offload_expiry_days
+    REFLIST_LOCAL_PATH                = local.has_external_refs ? "/opt" : ""
+    REFLIST_S3_PATH                   = local.has_external_refs ? format("%s/tilotech/tilores-reflists", local.artifacts_bucket) : ""
   }
 }

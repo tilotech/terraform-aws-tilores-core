@@ -74,6 +74,18 @@ data "aws_iam_policy_document" "lambda_core" {
     ]
     resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-*"]
   }
+  dynamic "statement" {
+    for_each = local.has_external_refs ? [1] : []
+    content {
+      effect = "Allow"
+      actions = [
+        "s3:GetObject"
+      ]
+      resources = [
+        format("arn:aws:s3:::%s/tilotech/tilores-reflists/*", local.artifacts_bucket)
+      ]
+    }
+  }
 }
 
 resource "aws_iam_policy" "lambda_send_usage_data" {
