@@ -241,7 +241,7 @@ variable "external_reflists" {
   default     = []
 
   validation {
-    condition     = alltrue([for ref in var.external_reflists : length(split("@", ref)) == 2])
+    condition     = alltrue([for ref in coalesce(var.external_reflists, []) : length(split("@", ref)) == 2])
     error_message = "Each external_reflists entry must be in format 'filename@version'."
   }
 }
