@@ -235,6 +235,17 @@ variable "cloudwatch_logs_retention_in_days" {
   default     = null
 }
 
+variable "external_reflists" {
+  type        = list(string)
+  description = "List of external reference list identifiers (format: filename@version)"
+  default     = []
+
+  validation {
+    condition     = alltrue([for ref in var.external_reflists : length(split("@", ref)) == 2])
+    error_message = "Each external_reflists entry must be in format 'filename@version'."
+  }
+}
+
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
   artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)

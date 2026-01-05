@@ -1,33 +1,18 @@
 // External Reference Lists
 //
-// Dynamically fetches reference lists configured with "external" in rule config
+// Fetches reference lists from S3 based on external_reflists variable
 // and creates a Lambda layer with them.
-// Extract and parse rule config from ZIP file
-data "external" "rule_config" {
-  program = ["bash", "-c", <<-EOT
-    unzip -p "${var.rule_config_file}" "*.json" | jq -c '{config: (. | @json)}'
-  EOT
-  ]
-}
 
 locals {
-  rule_config = jsondecode(data.external.rule_config.result.config)
-
-  // Extract external references from referenceLists
-  external_refs = [
-    for ref in try(local.rule_config.referenceLists, []) :
-    ref.external if try(ref.external, null) != null
-  ]
-
   // Parse each external reference: "filename@version"
   parsed_refs = {
-    for ext in local.external_refs : ext => {
+    for ext in var.external_reflists : ext => {
       filename = split("@", ext)[0]
       version  = split("@", ext)[1]
     }
   }
 
-  has_external_refs = length(local.parsed_refs) > 0
+  has_external_refs = length(var.external_reflists) > 0
 }
 
 // Fetch each external reference list file from S3
