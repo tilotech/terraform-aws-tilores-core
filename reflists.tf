@@ -6,13 +6,13 @@
 locals {
   // Parse each external reference: "filename@version"
   parsed_refs = {
-    for ext in var.external_reflists : ext => {
+    for ext in coalesce(var.external_reflists, []) : ext => {
       filename = split("@", ext)[0]
       version  = split("@", ext)[1]
     }
   }
 
-  has_external_refs = length(var.external_reflists) > 0
+  has_external_refs = length(coalesce(var.external_reflists, [])) > 0
 }
 
 // Fetch each external reference list file from S3
