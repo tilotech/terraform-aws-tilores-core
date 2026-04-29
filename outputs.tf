@@ -13,6 +13,11 @@ output "api_id" {
   description = "The ID of the GraphQL API."
 }
 
+output "api_execution_arn" {
+  value       = module.api_gateway.apigatewayv2_api_execution_arn
+  description = "The execution ARN of the GraphQL API."
+}
+
 output "core_policy_arn" {
   value       = aws_iam_policy.lambda_core.arn
   description = "The policy ARN granting access to core resources"
