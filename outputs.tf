@@ -93,6 +93,26 @@ output "table_records_arn" {
   description = "The DynamoDB arn for records table"
 }
 
+output "table_review_cases_name" {
+  value       = var.enable_review ? aws_dynamodb_table.review_cases[0].name : ""
+  description = "The DynamoDB name for the review cases table (if enabled)"
+}
+
+output "table_review_cases_arn" {
+  value       = var.enable_review ? aws_dynamodb_table.review_cases[0].arn : ""
+  description = "The DynamoDB arn for the review cases table (if enabled)"
+}
+
+output "table_review_decisions_name" {
+  value       = var.enable_review ? aws_dynamodb_table.review_decisions[0].name : ""
+  description = "The DynamoDB name for the review decisions table (if enabled)"
+}
+
+output "table_review_decisions_arn" {
+  value       = var.enable_review ? aws_dynamodb_table.review_decisions[0].arn : ""
+  description = "The DynamoDB arn for the review decisions table (if enabled)"
+}
+
 output "analytics_bucket_name" {
   value       = var.enable_analytics ? module.analytics[0].bucket_name : ""
   description = "The name of the bucket holding the analytics data (if enabled)"
