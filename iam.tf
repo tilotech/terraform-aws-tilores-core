@@ -86,6 +86,30 @@ data "aws_iam_policy_document" "lambda_core" {
       ]
     }
   }
+  # The review tables get their own statement rather than joining
+  # local.resources_granted_to_lambda, because the review repos are the only
+  # ones that query and that write in batches. Granting those two actions on
+  # every table would widen the access of everything else.
+  dynamic "statement" {
+    for_each = var.enable_review ? [1] : []
+    content {
+      effect = "Allow"
+      actions = [
+        "dynamodb:GetItem",
+        "dynamodb:BatchGetItem",
+        "dynamodb:PutItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query"
+      ]
+      resources = [
+        aws_dynamodb_table.review_cases[0].arn,
+        format("%s/index/*", aws_dynamodb_table.review_cases[0].arn),
+        aws_dynamodb_table.review_decisions[0].arn,
+      ]
+    }
+  }
 }
 
 resource "aws_iam_policy" "lambda_send_usage_data" {

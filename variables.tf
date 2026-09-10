@@ -169,6 +169,12 @@ variable "enable_analytics" {
   default     = false
 }
 
+variable "enable_review" {
+  description = "Defines whether to create the resources required for reviewing weak links (human-in-the-loop). Detection additionally requires a review block in the rule config."
+  type        = bool
+  default     = false
+}
+
 variable "snapshot_query_mode" {
   description = "Query mode for snapshot creation: WAIT (ensures successful query execution) or FIRE_AND_FORGET (ensures that the query was started but will not wait for it to finish). Ignored if enable_analytics is false."
   type        = string
@@ -271,6 +277,10 @@ locals {
     KINESIS_RAW_DATA_STREAM           = var.rawdata_stream_shard_count == 0 ? "" : aws_kinesis_stream.kinesis_rawdata_stream[0].name
     RAW_DATA_SQS                      = var.assemble_parallelization_sqs == 0 ? "" : aws_sqs_queue.rawdata[0].name
     SNAPSHOT_REPO_PROVIDER            = var.enable_analytics ? "ATHENA" : "NONE"
+    REVIEW_CASE_REPO_PROVIDER         = var.enable_review ? "DDB" : "NONE"
+    REVIEW_DECISION_REPO_PROVIDER     = var.enable_review ? "DDB" : "NONE"
+    DYNAMODB_REVIEW_CASES             = var.enable_review ? aws_dynamodb_table.review_cases[0].name : ""
+    DYNAMODB_REVIEW_DECISIONS         = var.enable_review ? aws_dynamodb_table.review_decisions[0].name : ""
     DEAD_LETTER_QUEUE                 = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS                    = var.update_records ? "TRUE" : "FALSE"
     ENTITY_FILE_COMPRESSION           = var.enable_file_compression ? "gzip" : ""
