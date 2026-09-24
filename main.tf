@@ -134,7 +134,7 @@ module "lambda_api" {
       module.lambda_layer_dispatcher_plugin.lambda_layer_arn,
       module.lambda_layer_rule_config.lambda_layer_arn,
     ],
-    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+    local.has_external_refs ? [aws_lambda_layer_version.ref_lists[0].arn] : []
   )
 
   allowed_triggers = {
