@@ -34,7 +34,7 @@ output "config_layer_arn" {
 }
 
 output "etm_ref_lists_layer_arn" {
-  value       = local.has_external_refs ? module.lambda_layer_etm_ref_lists[0].lambda_layer_arn : null
+  value       = local.has_external_refs ? aws_lambda_layer_version.ref_lists[0].arn : null
   description = "The lambda layer ARN holding etm external reference lists (null if none configured)"
 }
 

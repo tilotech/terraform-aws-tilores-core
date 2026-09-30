@@ -63,7 +63,7 @@ module "lambda_assemble" {
 
   layers = concat(
     [module.lambda_layer_rule_config.lambda_layer_arn],
-    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+    local.has_external_refs ? [aws_lambda_layer_version.ref_lists[0].arn] : []
   )
 
   environment_variables = merge(
@@ -115,7 +115,7 @@ module "lambda_assemble_serial" {
 
   layers = concat(
     [module.lambda_layer_rule_config.lambda_layer_arn],
-    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+    local.has_external_refs ? [aws_lambda_layer_version.ref_lists[0].arn] : []
   )
 
   environment_variables          = local.core_envs
@@ -157,7 +157,7 @@ module "lambda_remove_connection_ban" {
 
   layers = concat(
     [module.lambda_layer_rule_config.lambda_layer_arn],
-    local.has_external_refs ? [module.lambda_layer_etm_ref_lists[0].lambda_layer_arn] : []
+    local.has_external_refs ? [aws_lambda_layer_version.ref_lists[0].arn] : []
   )
 
   environment_variables = local.core_envs
