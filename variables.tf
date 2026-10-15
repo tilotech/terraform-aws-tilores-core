@@ -157,6 +157,12 @@ variable "update_records" {
   default     = false
 }
 
+variable "single_assembly_update" {
+  description = "Removes the replaced record version within the assembly of the new one instead of in a separate disassembly. Requires update_records. Keeps the entity IDs of the entities a record moves between and prevents the entity from ever holding two versions of the same record."
+  type        = bool
+  default     = false
+}
+
 variable "create_dashboard" {
   description = "Defines whether to create a cloudwatch dashboard"
   type        = bool
@@ -283,6 +289,7 @@ locals {
     DYNAMODB_REVIEW_DECISIONS         = var.enable_review ? aws_dynamodb_table.review_decisions[0].name : ""
     DEAD_LETTER_QUEUE                 = aws_sqs_queue.dead_letter_queue.name
     UPDATE_RECORDS                    = var.update_records ? "TRUE" : "FALSE"
+    SINGLE_ASSEMBLY_UPDATE            = var.single_assembly_update ? "TRUE" : "FALSE"
     ENTITY_FILE_COMPRESSION           = var.enable_file_compression ? "gzip" : ""
     PARTIAL_BATCH_RESPONSE            = var.assemble_parallelization_sqs == 0 ? "FALSE" : "TRUE"
     ENTITY_STREAM_OFFLOAD_EXPIRY_DAYS = var.entity_stream_offload_expiry_days
