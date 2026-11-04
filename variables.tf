@@ -81,6 +81,12 @@ variable "create_entity_stream" {
   default     = false
 }
 
+variable "enable_entity_stream_api" {
+  description = "Whether the GraphQL API may read and remove events from the entity event stream. Requires an SQS-based entity event stream. Do not enable it if anything else consumes the stream, e.g. a webhook, because each event is only delivered to one consumer."
+  type        = bool
+  default     = false
+}
+
 variable "entity_stream_offload_expiry_days" {
   description = "The number of days before offloaded entity stream messages will expire. Currently only applies to SQS-based entity streams."
   type        = number
