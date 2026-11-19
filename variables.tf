@@ -266,7 +266,7 @@ variable "external_reflists" {
 
 locals {
   prefix           = format("%s-tilores", var.resource_prefix)
-  artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.id)
+  artifacts_bucket = format("tilotech-artifacts-%s", data.aws_region.current.region)
   tilotech_api_url = "https://api.tilotech.io"
 
   rule_config_json_path = format("/opt/%s", replace(basename(var.rule_config_file), ".zip", ".json"))

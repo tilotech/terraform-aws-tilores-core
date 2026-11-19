@@ -206,17 +206,17 @@ module "lambda_scavenger" {
   allowed_triggers = merge(
     {
       assemble = {
-        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
+        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.region)
         source_arn = format("%s:*", aws_cloudwatch_log_group.lambda_assemble.arn)
       }
       remove_connection_ban = {
-        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
+        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.region)
         source_arn = format("%s:*", aws_cloudwatch_log_group.lambda_remove_connection_ban.arn)
       }
     },
     var.enable_serial_assembly ? {
       assemble_serial = {
-        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.id)
+        principal  = format("logs.%s.amazonaws.com", data.aws_region.current.region)
         source_arn = format("%s:*", aws_cloudwatch_log_group.lambda_assemble_serial[0].arn)
       }
     } : {}
@@ -248,7 +248,7 @@ module "lambda_scavenger" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-scavenger"]
+        resources = ["arn:aws:logs:${data.aws_region.current.region}:*:log-group:/aws/lambda/${local.prefix}-scavenger"]
       }
     },
     var.enable_analytics ? {

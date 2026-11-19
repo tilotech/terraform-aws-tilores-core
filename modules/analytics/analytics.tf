@@ -402,7 +402,7 @@ resource "aws_iam_policy" "aggregate_analytics" {
 }
 
 locals {
-  glue_catalog_arn         = "arn:aws:glue:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:catalog"
+  glue_catalog_arn         = "arn:aws:glue:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:catalog"
   s3_entities_snapshot_arn = "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.entities_snapshots.name}"
   s3_records_snapshot_arn  = "${aws_s3_bucket.analytics.arn}/${aws_glue_catalog_table.records_snapshots.name}"
   s3_query_output_arn      = "${aws_s3_bucket.analytics.arn}/${local.query_output_path}"
