@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "lambda_core" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = ["arn:aws:logs:${data.aws_region.current.id}:*:log-group:/aws/lambda/${local.prefix}-*"]
+    resources = ["arn:aws:logs:${data.aws_region.current.region}:*:log-group:/aws/lambda/${local.prefix}-*"]
   }
   dynamic "statement" {
     for_each = local.has_external_refs ? [1] : []
