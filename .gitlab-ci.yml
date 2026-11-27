@@ -1,0 +1,6 @@
+include:
+  - project: tilotech/template-gitlab-ci
+    file: /terraform-checks.gitlab-ci.yml
+
+stages:
+  - verify
