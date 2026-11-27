@@ -14,5 +14,13 @@ terraform {
       source  = "hashicorp/local"
       version = ">= 2.2" # local_sensitive_file
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = ">= 2.8"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.3"
+    }
   }
 }
