@@ -28,6 +28,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "entity" {
   }
 }
 
+# Encrypted at rest with an AWS-managed key (KMS aws/s3); we use no customer-managed keys.
+#trivy:ignore:AWS-0132
 resource "aws_s3_bucket_server_side_encryption_configuration" "entity" {
   bucket = aws_s3_bucket.entity.id
 
@@ -93,6 +95,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "execution_plan" {
   }
 }
 
+# Encrypted at rest with an AWS-managed key (KMS aws/s3); we use no customer-managed keys.
+#trivy:ignore:AWS-0132
 resource "aws_s3_bucket_server_side_encryption_configuration" "execution_plan" {
   bucket = aws_s3_bucket.execution_plan.id
 

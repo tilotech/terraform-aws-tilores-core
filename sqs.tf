@@ -1,15 +1,21 @@
+# Encrypted at rest with an AWS-managed key (KMS aws/sqs); we use no customer-managed keys.
+#trivy:ignore:AWS-0135
 resource "aws_sqs_queue" "dead_letter_queue" {
   name                      = format("%s-%s", local.prefix, "dead-letter-queue")
   receive_wait_time_seconds = 20
   kms_master_key_id         = "alias/aws/sqs"
 }
 
+# Encrypted at rest with an AWS-managed key (KMS aws/sqs); we use no customer-managed keys.
+#trivy:ignore:AWS-0135
 resource "aws_sqs_queue" "scavenger_dead_letter_queue" {
   name                      = format("%s-%s", local.prefix, "scavenger-dead-letter-queue")
   receive_wait_time_seconds = 20
   kms_master_key_id         = "alias/aws/sqs"
 }
 
+# Encrypted at rest with an AWS-managed key (KMS aws/sqs); we use no customer-managed keys.
+#trivy:ignore:AWS-0135
 resource "aws_sqs_queue" "rawdata" {
   count                             = var.assemble_parallelization_sqs == 0 ? 0 : 1
   name                              = format("%s-%s", local.prefix, "rawdata")
